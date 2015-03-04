@@ -1,48 +1,41 @@
 #!/bin/bash
 OS=`cat /etc/issue`
+VERSION=$(egrep -o "\d{1,}\.\d{1,}" <<< "$OS")
 
 #### Ubuntu Section
-if [[ $string == *"Ubuntu"* ]]; then
-  if [[ $string =~ '\d\.\d']]; then
-    VERSION=$BASH_REMATCH
-    echo "Ubuntu $VERSION"
-    if[[ $VERSION -lt 14.0 ]]; then
-      echo "$VERSION is not a supported Ubuntu Version, need > 14.04"
-      return -1
-    else
-      sudo apt-get update
-      sudo apt-get install docker.io
-      source /etc/bash_completion.d/docker.io
-    fi
+if [[ $OS == *"Ubuntu"* ]]; then
+  echo "Ubuntu $VERSION"
+  if(( $(bc <<< "$VERSION < 14.0") == 1 )); then
+    echo "$VERSION is not a supported Ubuntu Version, need > 14.04"
+    exit -1
+  else
+    sudo apt-get update
+    sudo apt-get install docker.io
+    source /etc/bash_completion.d/docker.io 
   fi
 
 #### RHEL Section
-elif [[ $string == *"Red Hat Enterprise Linux Server"* ]]; then
+elif [[ $OS == *"Red Hat Enterprise Linux Server"* ]]; then
+  echo "RHEL $VERSION"
   sudo yum update
 
-  # Get the version
-  if [[ $string =~ '\d\.\d']]; then
-    VERSION=$BASH_REMATCH
-    echo "RHEL $VERSION"
-    if[[ $VERSION -lt 6.5 ]]; then
-      echo "$VERSION is not a supported RHEL Version, need > 6.5"
-      return -1
-    elif [[ $VERSION -gt 7.0 ]]; then
-      sudo subscription-manager repos --enable=rhel-7-server-extras-rpms
-      sudo yum install docker
-    else
-      sudo yum -y remove docker
-      sudo yum install docker-io
-      sudo yum -y update docker-io
-    fi
-
-    #Start the service
-    sudo service docker start
-    sudo chkconfig docker on
-
+  if(( $(bc <<< "$VERSION < 6.5") == 1 )); then
+    echo "$VERSION is not a supported RHEL Version, need > 6.5"
+    exit -1
+  elif [[ $VERSION -gt 7.0 ]]; then
+    sudo subscription-manager repos --enable=rhel-7-server-extras-rpms
+    sudo yum install docker
+  else
+    sudo yum -y remove docker
+    sudo yum install docker-io
+    sudo yum -y update docker-io
   fi
 
+  #Start the service
+  sudo service docker start
+  sudo chkconfig docker on
+
 else
-  echo "$string is not a supported OS"
-  return -1
+  echo "$OS is not a supported OS"
+  exit -1
 fi
