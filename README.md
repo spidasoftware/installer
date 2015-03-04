@@ -1,4 +1,5 @@
 # installer
 a installation script for min
 
-`sudo sh "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+`\curl https://raw.githubusercontent.com/spidasoftware/installer/master/install | bash`
+
