@@ -1,6 +1,6 @@
 #!/bin/bash
 OS=`cat /etc/issue`
-VERSION=$(egrep -o "\d{1,}\.\d{1,}" <<< "$OS")
+VERSION=$(egrep -o "[0-9]{1,}\.[0-9]{1,}" <<< "$OS")
 
 #### Ubuntu Section
 if [[ $OS == *"Ubuntu"* ]]; then
