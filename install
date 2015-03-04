@@ -10,7 +10,7 @@ if [[ $OS == *"Ubuntu"* ]]; then
     exit -1
   else
     sudo apt-get update
-    sudo apt-get install docker.io
+    sudo apt-get -y install docker.io
     source /etc/bash_completion.d/docker.io 
   fi
 
@@ -24,10 +24,10 @@ elif [[ $OS == *"Red Hat Enterprise Linux Server"* ]]; then
     exit -1
   elif [[ $VERSION -gt 7.0 ]]; then
     sudo subscription-manager repos --enable=rhel-7-server-extras-rpms
-    sudo yum install docker
+    sudo yum -y install docker
   else
     sudo yum -y remove docker
-    sudo yum install docker-io
+    sudo yum -y install docker-io
     sudo yum -y update docker-io
   fi
 
