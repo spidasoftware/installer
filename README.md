@@ -4,6 +4,7 @@ Installation Requirements
 ----------
 
 1. Ubuntu 14.04+, RHEL 6.5+
+2. A Docker Username that you have provided to SPIDA.
 
 
 Default Installation

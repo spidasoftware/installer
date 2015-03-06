@@ -63,8 +63,12 @@ fi
 ### ---------------------------------------
 
 # Read if there were any parameters in the commandline, if not, pull the default "SPIDAMin installation"
-echo "Pulling $1"
+echo "Pulling SPIDAMin and its dependencies."
 
 ## DO ALL THE DOCKER STUFF
+#docker pull spidasoftware/min-automated:latest
+docker pull spidasoftware/redis:latest
+#docker pull spidasoftware/mongodb:latest
+#docker pull spidasoftware/postgresql:latest
 
-# Create the init.d script
+sudo docker run --restart=always spidasoftware/redis:latest
