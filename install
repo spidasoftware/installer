@@ -2,6 +2,9 @@
 OS=`cat /etc/issue`
 VERSION=$(egrep -o "[0-9]{1,}\.[0-9]{1,}" <<< "$OS")
 
+### First get Docker
+### ---------------------------------------
+
 #### Ubuntu Section
 if [[ $OS == *"Ubuntu"* ]]; then
   echo "Ubuntu $VERSION"
@@ -22,10 +25,12 @@ elif [[ $OS == *"Red Hat Enterprise Linux Server"* ]]; then
   if(( $(bc <<< "$VERSION < 6.5") == 1 )); then
     echo "$VERSION is not a supported RHEL Version, need > 6.5"
     exit -1
-  elif [[ $VERSION -gt 7.0 ]]; then
+  elif(( $(bc <<< "$VERSION > 6.99") == 1 )); then
+    # 7.0 plus
     sudo subscription-manager repos --enable=rhel-7-server-extras-rpms
     sudo yum -y install docker
   else
+    # 6.5 but less than 7 
     sudo yum -y remove docker
     sudo yum -y install docker-io
     sudo yum -y update docker-io
@@ -35,7 +40,31 @@ elif [[ $OS == *"Red Hat Enterprise Linux Server"* ]]; then
   sudo service docker start
   sudo chkconfig docker on
 
+#### SUSE Section - Check this on a SUSE system
+# elif [[ $OS == *"SUSE"* ]]; then
+  # if(( $(bc <<< "$VERSION == 12.3") == 1 )); then
+  #   sudo zypper ar -f http://download.opensuse.org/repositories/Virtualization/openSUSE_12.3/ Virtualization
+  # elif(( $(bc <<< "$VERSION == 13.1") == 1 )); then
+  #   sudo zypper ar -f http://download.opensuse.org/repositories/Virtualization/openSUSE_13.1/ Virtualization
+  # elif(( $(bc <<< "$VERSION < 13") == 1 )); then
+  #   echo "$VERSION is not a supported SUSE Version, need 12.3 or 13.1"
+  #   exit -1
+  # fi
+  # sudo zypper in docker
+  # sudo systemctl start docker
+  # sudo systemctl enable docker
+
 else
   echo "$OS is not a supported OS"
   exit -1
 fi
+
+### Then get the actual images/build we need.
+### ---------------------------------------
+
+# Read if there were any parameters in the commandline, if not, pull the default "SPIDAMin installation"
+echo "Pulling $1"
+
+## DO ALL THE DOCKER STUFF
+
+# Create the init.d script
