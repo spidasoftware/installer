@@ -114,22 +114,19 @@ if [[ "$*" != *"--no-spidamin"* ]]; then
       - redis 
     ports: 
       - \"8000:8000\" 
-      - \"8443:8443\"
-      " >> docker-compose.yml
+      - \"8443:8443\"" >> docker-compose.yml
 fi
 
 if [[ "$*" != *"--no-postgresql"* ]]; then
   echo $"postgresql: 
     image: spidasoftware/postgresql 
-    restart: always
-    " >> docker-compose.yml
+    restart: always" >> docker-compose.yml
 fi
 
 if [[ "$*" != *"--no-mongodb"* ]]; then
   echo $"mongodb: 
   image: spidasoftware/mongodb 
-  restart: always
-  " >> docker-compose.yml
+  restart: always" >> docker-compose.yml
 fi
 
 if [[ "$*" != *"--no-redis"* ]]; then
