@@ -12,9 +12,31 @@ if [[ $OS == *"Ubuntu"* ]]; then
     echo "$VERSION is not a supported Ubuntu Version, need > 14.04"
     exit -1
   else
+
+    # Check that HTTPS transport is available to APT
+    if [ ! -e /usr/lib/apt/methods/https ]; then
+      sudo apt-get update
+      sudo apt-get install -y apt-transport-https
+    fi
+
+    # Add the repository to your APT sources
+    sudo echo deb https://get.docker.com/ubuntu docker main > /etc/apt/sources.list.d/docker.list
+
+    # Then import the repository key
+    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
+
+    # Install docker
     sudo apt-get update
-    sudo apt-get -y install docker.io
-    source /etc/bash_completion.d/docker.io 
+    sudo apt-get install -y lxc-docker
+    sudo source /etc/bash_completion.d/docker.io 
+
+    docker --version
+
+    # Instal docker-compose
+    sudo curl -L https://github.com/docker/compose/releases/download/1.1.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+    sudo chmod +x /usr/local/bin/docker-compose
+
+    docker-compose --version
   fi
 
 #### RHEL Section
@@ -40,6 +62,9 @@ elif [[ $OS == *"Red Hat Enterprise Linux Server"* ]]; then
   sudo service docker start
   sudo chkconfig docker on
 
+  sudo curl -L https://github.com/docker/compose/releases/download/1.1.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+  sudo chmod +x /usr/local/bin/docker-compose
+
 #### SUSE Section - Check this on a SUSE system
 # elif [[ $OS == *"SUSE"* ]]; then
   # if(( $(bc <<< "$VERSION == 12.3") == 1 )); then
@@ -59,16 +84,27 @@ else
   exit -1
 fi
 
-### Then get the actual images/build we need.
-### ---------------------------------------
+echo "Creating the docker-compose files"
+sudo touch docker-compose.yml
+echo "spidamin: 
+  image: spidasoftware/min:$1 
+  restart: always 
+  links: 
+    - postgresql 
+    - mongodb 
+    - redis 
+  ports: 
+    - \"8000:8000\" 
+    - \"8443:8443\" 
+postgresql: 
+  image: spidasoftware/postgresql 
+  restart: always 
+mongodb: 
+  image: spidasoftware/mongodb 
+  restart: always 
+redis: 
+  image: spidasoftware/redis 
+  restart: always" >> docker-compose.yml
 
-# Read if there were any parameters in the commandline, if not, pull the default "SPIDAMin installation"
-echo "Pulling SPIDAMin and its dependencies."
-
-## DO ALL THE DOCKER STUFF
-#docker pull spidasoftware/min-automated:latest
-docker pull spidasoftware/redis:latest
-#docker pull spidasoftware/mongodb:latest
-#docker pull spidasoftware/postgresql:latest
-
-sudo docker run --restart=always spidasoftware/redis:latest
+# Start docker
+sudo docker-compose up -d
