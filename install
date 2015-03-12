@@ -12,32 +12,28 @@ if [[ $OS == *"Ubuntu"* ]]; then
     echo "$VERSION is not a supported Ubuntu Version, need > 14.04"
     exit -1
   else
+    sudo docker --version
+    if [ $? -ne 0 ]; then
+      echo "docker not installed...installing"
+      # Check that HTTPS transport is available to APT
+      if [ ! -e /usr/lib/apt/methods/https ]; then
+        sudo apt-get update
+        sudo apt-get install -y apt-transport-https
+      fi
 
-    # Check that HTTPS transport is available to APT
-    if [ ! -e /usr/lib/apt/methods/https ]; then
+      # Add the repository to your APT sources
+      sudo echo deb https://get.docker.com/ubuntu docker main > /etc/apt/sources.list.d/docker.list
+
+      # Then import the repository key
+      sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
+
+      # Install docker
       sudo apt-get update
-      sudo apt-get install -y apt-transport-https
+      sudo apt-get install -y lxc-docker
+      sudo source /etc/bash_completion.d/docker.io 
+
+      sudo docker --version
     fi
-
-    # Add the repository to your APT sources
-    sudo echo deb https://get.docker.com/ubuntu docker main > /etc/apt/sources.list.d/docker.list
-
-    # Then import the repository key
-    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
-
-    # Install docker
-    sudo apt-get update
-    sudo apt-get install -y lxc-docker
-    sudo source /etc/bash_completion.d/docker.io 
-
-    docker --version
-
-    # Instal docker-compose
-    sudo curl -L https://github.com/docker/compose/releases/download/1.1.0/docker-compose-`uname -s`-`uname -m` > docker-compose
-    sudo mv docker-compose /usr/local/bin/docker-compose
-    sudo chmod +x /usr/local/bin/docker-compose
-
-    docker-compose --version
   fi
 
 #### RHEL Section
@@ -48,23 +44,38 @@ elif [[ $OS == *"Red Hat Enterprise Linux Server"* ]]; then
   if(( $(bc <<< "$VERSION < 6.5") == 1 )); then
     echo "$VERSION is not a supported RHEL Version, need > 6.5"
     exit -1
-  elif(( $(bc <<< "$VERSION > 6.99") == 1 )); then
-    # 7.0 plus
-    sudo subscription-manager repos --enable=rhel-7-server-extras-rpms
-    sudo yum -y install docker
-  else
-    # 6.5 but less than 7 
-    sudo yum -y remove docker
-    sudo yum -y install docker-io
-    sudo yum -y update docker-io
+  fi
+
+  sudo docker --version
+  if [ $? -ne 0 ]; then
+    echo "docker not installed...installing"
+    if(( $(bc <<< "$VERSION > 6.99") == 1 )); then
+      # 7.0 plus
+      sudo subscription-manager repos --enable=rhel-7-server-extras-rpms
+      sudo yum -y install docker
+      fi
+    else
+      # 6.5 but less than 7 
+      sudo yum -y remove docker
+      sudo yum -y install docker-io
+      sudo yum -y update docker-io
+    fi
+    sudo docker --version
   fi
 
   #Start the service
   sudo service docker start
   sudo chkconfig docker on
 
-  sudo curl -L https://github.com/docker/compose/releases/download/1.1.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
-  sudo chmod +x /usr/local/bin/docker-compose
+  sudo docker-compose --version
+  if [ $? -ne 0 ]; then
+    echo "docker-compose not installed...installing"
+    sudo curl -L https://github.com/docker/compose/releases/download/1.1.0/docker-compose-`uname -s`-`uname -m` > docker-compose
+    sudo mv docker-compose /usr/local/bin/docker-compose
+    sudo chmod +x /usr/local/bin/docker-compose
+
+    docker-compose --version
+  fi
 
 #### SUSE Section - Check this on a SUSE system
 # elif [[ $OS == *"SUSE"* ]]; then
@@ -109,4 +120,4 @@ redis:
   restart: always" >> docker-compose.yml
 
 # Start docker
-sudo docker-compose up -d
+#sudo docker-compose up -d
