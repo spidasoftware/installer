@@ -106,37 +106,37 @@ sudo touch docker-compose.yml
 sudo chmod 666 docker-compose.yml
 if [[ "$*" != *"--no-spidamin"* ]]; then
   echo "spidamin: 
-image: spidasoftware/min:$1 
-  restart: always 
-  links: 
-    - postgresql 
-    - mongodb 
-    - redis 
-  ports: 
-    - \"8000:8000\" 
-    - \"8443:8443\"" >> docker-compose.yml
+  image: spidasoftware/min:$1 
+    restart: always 
+    links: 
+      - postgresql 
+      - mongodb 
+      - redis 
+    ports: 
+      - \"8000:8000\" 
+      - \"8443:8443\"" >> docker-compose.yml
 fi
 
 if [[ "$*" != *"--no-postgresql"* ]]; then
   echo "postgresql: 
-image: spidasoftware/postgresql 
-  restart: always
-  ports: 
-    - \"5432:5432\"" >> docker-compose.yml
+  image: spidasoftware/postgresql 
+    restart: always
+    ports: 
+      - \"5432:5432\"" >> docker-compose.yml
 fi
 
 if [[ "$*" != *"--no-mongodb"* ]]; then
   echo "mongodb: 
-image: spidasoftware/mongodb 
-  restart: always
-  ports: 
-    - \"27017:27017\"" >> docker-compose.yml
+  image: spidasoftware/mongodb 
+    restart: always
+    ports: 
+      - \"27017:27017\"" >> docker-compose.yml
 fi
 
 if [[ "$*" != *"--no-redis"* ]]; then
   echo "redis: 
-image: spidasoftware/redis 
-restart: always" >> docker-compose.yml
+  image: spidasoftware/redis 
+  restart: always" >> docker-compose.yml
 fi
 
 # Start docker
