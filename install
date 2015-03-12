@@ -1,10 +1,4 @@
 #!/bin/bash
-
-if [ -z "$1" ]; then
-    echo "No machine argument supplied, exiting"
-    exit -1
-fi
-
 OS=`cat /etc/issue`
 VERSION=$(egrep -o "[0-9]{1,}\.[0-9]{1,}" <<< "$OS")
 
@@ -104,15 +98,27 @@ fi
 echo "Creating the docker-compose files"
 sudo touch docker-compose.yml
 sudo chmod 666 docker-compose.yml
+
 if [[ "$*" != *"--no-spidamin"* ]]; then
+  if [ -z "$1" ]; then
+    echo "No machine argument supplied, exiting"
+    exit -1
+  fi
   echo "spidamin: 
   image: spidasoftware/min:$1 
   restart: always 
-  links: 
-    - postgresql 
-    - mongodb 
-    - redis 
-  ports: 
+  links:" >> docker-compose.yml
+  if [[ "$*" != *"--no-postgresql"* ]]; then
+echo "   - postgresql" >> docker-compose.yml
+  fi
+  if [[ "$*" != *"--no-mongodb"* ]]; then
+echo "   - mongodb" >> docker-compose.yml
+  fi
+  if [[ "$*" != *"--no-redis"* ]]; then
+echo "   - redis" >> docker-compose.yml
+  fi
+
+echo "  ports: 
     - \"8000:8000\" 
     - \"8443:8443\"" >> docker-compose.yml
 fi
@@ -133,11 +139,11 @@ if [[ "$*" != *"--no-mongodb"* ]]; then
     - \"27017:27017\"" >> docker-compose.yml
 fi
 
-if [[ "$*" != *"--no-redis"* ]]; then
+if [[ "$*" != *"--no-spidamin"* ]]; then
   echo "redis: 
   image: spidasoftware/redis 
   restart: always" >> docker-compose.yml
 fi
 
 # Start docker
-#sudo docker-compose up -d
+sudo docker-compose up -d
