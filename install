@@ -28,7 +28,7 @@ if [[ $OS == *"Ubuntu"* ]]; then
     # Install docker
     sudo apt-get update
     sudo apt-get install -y lxc-docker
-    sudo source /etc/bash_completion.d/docker.io 
+    source /etc/bash_completion.d/docker.io 
 
     docker --version
 
@@ -87,6 +87,7 @@ fi
 
 echo "Creating the docker-compose files"
 sudo touch docker-compose.yml
+sudo chmod +w docker-compose.yml
 echo "spidamin: 
   image: spidasoftware/min:$1 
   restart: always 
