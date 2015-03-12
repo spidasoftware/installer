@@ -95,7 +95,7 @@ if [ $? -ne 0 ]; then
   docker-compose --version
 fi
 
-echo "Creating the docker-compose files"
+echo "Creating the docker-compose file"
 sudo touch docker-compose.yml
 sudo chmod 666 docker-compose.yml
 
