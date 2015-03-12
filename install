@@ -104,25 +104,36 @@ fi
 echo "Creating the docker-compose files"
 sudo touch docker-compose.yml
 sudo chmod 666 docker-compose.yml
-echo "spidamin: 
-  image: spidasoftware/min:$1 
-  restart: always 
-  links: 
-    - postgresql 
-    - mongodb 
-    - redis 
-  ports: 
-    - \"8000:8000\" 
-    - \"8443:8443\" 
-postgresql: 
-  image: spidasoftware/postgresql 
-  restart: always 
-mongodb: 
+if [[ "$*" != *"--no-spidamin"* ]]; then
+  echo "spidamin: 
+    image: spidasoftware/min:$1 
+    restart: always 
+    links: 
+      - postgresql 
+      - mongodb 
+      - redis 
+    ports: 
+      - \"8000:8000\" 
+      - \"8443:8443\"\n" >> docker-compose.yml
+fi
+
+if [[ "$*" != *"--no-postgresql"* ]]; then
+  echo "postgresql: 
+    image: spidasoftware/postgresql 
+    restart: always\n" >> docker-compose.yml
+fi
+
+if [[ "$*" != *"--no-mongodb"* ]]; then
+  echo "mongodb: 
   image: spidasoftware/mongodb 
-  restart: always 
-redis: 
+  restart: always\n" >> docker-compose.yml
+fi
+
+if [[ "$*" != *"--no-redis"* ]]; then
+  echo "redis: 
   image: spidasoftware/redis 
   restart: always" >> docker-compose.yml
+fi
 
 # Start docker
 #sudo docker-compose up -d
