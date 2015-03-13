@@ -96,6 +96,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Creating the docker-compose file"
+sudo rm -f docker-compose.yml
 sudo touch docker-compose.yml
 sudo chmod 666 docker-compose.yml
 
@@ -136,7 +137,8 @@ if [[ "$*" != *"--no-mongodb"* ]]; then
   image: spidasoftware/mongodb 
   restart: always
   ports: 
-    - \"27017:27017\"" >> docker-compose.yml
+    - \"27017:27017\"
+    - \"28017:28017\"" >> docker-compose.yml
 fi
 
 if [[ "$*" != *"--no-spidamin"* ]]; then
