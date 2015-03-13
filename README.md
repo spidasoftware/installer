@@ -12,5 +12,5 @@ Default Installation
 
 A complete installation is completed by running the following command on the server
 
-`sudo curl https://raw.githubusercontent.com/spidasoftware/installer/master/install | bash -s default uname email pword`
+`sudo curl https://raw.githubusercontent.com/spidasoftware/installer/master/install | bash -s default username email`
 
