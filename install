@@ -96,12 +96,12 @@ if [ $? -ne 0 ]; then
 fi
 
 echo $# arguments 
-if [ $# -lt 3 ]; then 
+if [ $# -lt 4 ]; then 
   echo "illegal number of parameters, exiting."
   exit -1
 fi
 
-sudo docker login -u $2 -e $3
+sudo docker login -u $2 -e $3 -p $4
 
 if [ $? -ne 0 ]; then
   echo "loging failed, exiting."
