@@ -95,13 +95,12 @@ if [ $? -ne 0 ]; then
   docker-compose --version
 fi
 
-echo $# arguments 
 if [ $# -lt 3 ]; then 
   echo "illegal number of parameters, exiting."
   exit -1
 fi
 
-read  -s -p "Docker password:" dockerPassword
+read  -s -p "Docker password: " dockerPassword
 
 sudo docker login -u $2 -e $3 -p $dockerPassword
 
@@ -160,3 +159,5 @@ fi
 
 # Start docker
 sudo docker-compose up -d
+
+sudo docker logout
