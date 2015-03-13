@@ -95,16 +95,25 @@ if [ $? -ne 0 ]; then
   docker-compose --version
 fi
 
+echo $# arguments 
+if [ $# -lt 4 ]; then 
+  echo "illegal number of parameters, exiting."
+  exit -1
+fi
+
+sudo docker login -u $2 -e $3 -p $4
+
+if [ $? -ne 0 ]; then
+  echo "loging failed, exiting."
+  exit -1
+fi
+
 echo "Creating the docker-compose file"
 sudo rm -f docker-compose.yml
 sudo touch docker-compose.yml
 sudo chmod 666 docker-compose.yml
 
 if [[ "$*" != *"--no-spidamin"* ]]; then
-  if [ -z "$1" ]; then
-    echo "No machine argument supplied, exiting"
-    exit -1
-  fi
   echo "spidamin: 
   image: spidasoftware/min:$1 
   restart: always 
