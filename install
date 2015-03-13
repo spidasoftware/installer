@@ -101,7 +101,8 @@ if [ $# -lt 3 ]; then
   exit -1
 fi
 
-read  -p "Docker password: " dockerPassword -n 1
+echo -n "Enter you Docker password and press [ENTER]: "
+read -n 1 dockerPassword
 
 sudo docker login -u $2 -e $3 -p $dockerPassword
 
