@@ -114,10 +114,14 @@ sudo rm -f docker-compose.yml
 sudo touch docker-compose.yml
 sudo chmod 666 docker-compose.yml
 
+
+HOST_MACHINE_HOST_NAME=`hostname -f`
 if [[ "$*" != *"--no-spidamin"* ]]; then
   echo "spidamin: 
   image: spidasoftware/min:$1 
   restart: always 
+  environment:
+    - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME
   links:" >> docker-compose.yml
   if [[ "$*" != *"--no-postgresql"* ]]; then
 echo "   - postgresql" >> docker-compose.yml
@@ -151,7 +155,7 @@ if [[ "$*" != *"--no-mongodb"* ]]; then
     - \"28017:28017\"" >> docker-compose.yml
 fi
 
-if [[ "$*" != *"--no-spidamin"* ]]; then
+if [[ "$*" != *"--no-redis"* ]] || [[ "$*" != *"--no-spidamin"* ]]; then
   echo "redis: 
   image: spidasoftware/redis 
   restart: always" >> docker-compose.yml
