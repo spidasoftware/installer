@@ -124,10 +124,10 @@ if [ $? -ne 0 ]; then
 fi
 
 if [[ "$username" = "" ]]; then
-  read -s "Docker username: " username
+  read -p "Docker username: " username
 fi
 if [[ "$email" = "" ]]; then
-  read -s "Docker email: " email
+  read -p "Docker email: " email
 fi
 read  -s -p "Docker password: " dockerPassword
 
