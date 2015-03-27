@@ -1,7 +1,7 @@
 #!/bin/bash
 
 hostName=`hostname -f`
-tag=
+tag=latest
 username=
 email=
 spidaMin=true
@@ -20,17 +20,12 @@ do
         --no-mongodb)  mongo=false;;
         *)
             echo >&2 \
-            "usage: $0 -tag tag -username dockerUsername -email dockerEmail [-host host] [--no-spidamin] [--no-postgresql] [--no-mongodb]"
+            "usage: $0 [-tag tag] [-username dockerUsername] [-email dockerEmail] [-host host] [--no-spidamin] [--no-postgresql] [--no-mongodb]"
             exit 1;;
         *)  break;; # terminate while loop
     esac
     shift
 done
-
-if [[ "$tag" = "" ]] || [[ "$username" = "" ]] || [[ "$email" = "" ]]; then
-  echo "tag, username and email arguments are required"
-  exit 1
-fi
 
 OS=`cat /etc/issue`
 VERSION=$(egrep -o "[0-9]{1,}\.[0-9]{1,}" <<< "$OS")
@@ -128,9 +123,15 @@ if [ $? -ne 0 ]; then
   docker-compose --version
 fi
 
+if [[ "$username" = "" ]]; then
+  read -s "Docker username: " username
+fi
+if [[ "$email" = "" ]]; then
+  read -s "Docker email: " email
+fi
 read  -s -p "Docker password: " dockerPassword
 
-sudo docker login -u $2 -e $3 -p $dockerPassword
+sudo docker login -u $username -e $email password -p $dockerPassword
 
 if [ $? -ne 0 ]; then
   echo "loging failed, exiting."
