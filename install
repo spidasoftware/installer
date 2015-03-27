@@ -29,7 +29,7 @@ done
 
 if [[ "$tag" = "" ]] || [[ "$username" = "" ]] || [[ "$email" = "" ]]; then
   echo "tag, username and email arguments are required"
-  exit 1;;
+  exit 1
 fi
 
 OS=`cat /etc/issue`
