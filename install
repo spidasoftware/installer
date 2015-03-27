@@ -20,7 +20,7 @@ do
         --no-mongodb)  mongo=false;;
         *)
             echo >&2 \
-            "usage: $0 -tag tag -host host -username dockerUsername -email dockerEmail [--no-spidamin] [--no-postgresql] [--no-mongodb]"
+            "usage: $0 -tag tag -username dockerUsername -email dockerEmail [-host host] [--no-spidamin] [--no-postgresql] [--no-mongodb]"
             exit 1;;
         *)  break;; # terminate while loop
     esac
