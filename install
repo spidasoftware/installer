@@ -1,9 +1,9 @@
 #!/bin/bash
 
 hostName=`hostname -f`
-tag=latest
-username=
-email=
+tag="latest"
+username=""
+email=""
 spidaMin=true
 postrgresql=true
 mongo=true
@@ -147,7 +147,7 @@ sudo chmod 666 docker-compose.yml
 HOST_MACHINE_HOST_NAME=`hostname -f`
 if [[ $spidaMin = true ]]; then
   echo "spidamin: 
-  image: spidasoftware/min:$1 
+  image: spidasoftware/min:$tag 
   restart: always 
   environment:
     - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME
