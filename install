@@ -1,4 +1,37 @@
 #!/bin/bash
+
+hostName=`hostname -f`
+tag=
+username=
+email=
+spidaMin=true
+postrgresql=true
+mongo=true
+while [ $# -gt 0 ]
+do
+  echo "$1"
+    case "$1" in
+        -tag) tag="$2"; shift;;
+        -host)  hostName="$2"; shift;;
+        -username)  username="$2"; shift;;
+        -email)  email="$2"; shift;;
+        --no-spidamin)  spidaMin=false;;
+        --no-postgresql)  postrgresql=false;;
+        --no-mongodb)  mongo=false;;
+        *)
+            echo >&2 \
+            "usage: $0 -tag tag -host host -username dockerUsername -email dockerEmail [--no-spidamin] [--no-postgresql] [--no-mongodb]"
+            exit 1;;
+        *)  break;; # terminate while loop
+    esac
+    shift
+done
+
+if [[ "$tag" = "" ]] || [[ "$username" = "" ]] || [[ "$email" = "" ]]; then
+  echo "tag, username and email arguments are required"
+  exit 1;;
+fi
+
 OS=`cat /etc/issue`
 VERSION=$(egrep -o "[0-9]{1,}\.[0-9]{1,}" <<< "$OS")
 
@@ -95,11 +128,6 @@ if [ $? -ne 0 ]; then
   docker-compose --version
 fi
 
-if [ $# -lt 3 ]; then 
-  echo "illegal number of parameters, exiting."
-  exit -1
-fi
-
 read  -s -p "Docker password: " dockerPassword
 
 sudo docker login -u $2 -e $3 -p $dockerPassword
@@ -116,7 +144,7 @@ sudo chmod 666 docker-compose.yml
 
 
 HOST_MACHINE_HOST_NAME=`hostname -f`
-if [[ "$*" != *"--no-spidamin"* ]]; then
+if [[ $spidaMin = true ]]; then
   echo "spidamin: 
   image: spidasoftware/min:$1 
   restart: always 
@@ -138,7 +166,7 @@ echo "  ports:
     - \"8443:8443\"" >> docker-compose.yml
 fi
 
-if [[ "$*" != *"--no-postgresql"* ]]; then
+if [[ $postrgresql = true ]]; then
   echo "postgresql: 
   image: spidasoftware/postgresql 
   restart: always
@@ -146,7 +174,7 @@ if [[ "$*" != *"--no-postgresql"* ]]; then
     - \"5432:5432\"" >> docker-compose.yml
 fi
 
-if [[ "$*" != *"--no-mongodb"* ]]; then
+if [[ $mongo = true ]]; then
   echo "mongodb: 
   image: spidasoftware/mongodb 
   restart: always
@@ -155,7 +183,7 @@ if [[ "$*" != *"--no-mongodb"* ]]; then
     - \"28017:28017\"" >> docker-compose.yml
 fi
 
-if [[ "$*" != *"--no-redis"* ]] || [[ "$*" != *"--no-spidamin"* ]]; then
+if [[ $spidaMin = true ]]; then
   echo "redis: 
   image: spidasoftware/redis 
   restart: always" >> docker-compose.yml
