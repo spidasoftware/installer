@@ -130,8 +130,8 @@ if [[ "$email" = "" ]]; then
   read -p "Docker email: " email
 fi
 read  -s -p "Docker password: " dockerPassword
-echo "docker login"
-sudo docker login -u $username -e $email password -p $dockerPassword
+
+sudo docker login -u $username -e $email -p $dockerPassword
 
 if [ $? -ne 0 ]; then
   echo "loging failed, exiting."
