@@ -180,17 +180,17 @@ if [[ $needEnvFile = true ]]; then
   sudo touch .docker-common.env
   sudo chmod 666 .docker-common.env
   if [[ dbpassword != "" ]]; then
-    echo "DATABASE_PASSWORD: $databasePassword" >> .docker-common.env
-    echo "POSTGRES_PASSWORD: $databasePassword" >> .docker-common.env
+    echo "DATABASE_PASSWORD=$databasePassword" >> .docker-common.env
+    echo "POSTGRES_PASSWORD=$databasePassword" >> .docker-common.env
   fi
   if [[ mongopassword != "" ]]; then
-    echo "MONGO_PASSWORD: $mongoPassword" >> .docker-common.env
+    echo "MONGO_PASSWORD=$mongoPassword" >> .docker-common.env
   fi
   if [[ tomcatpassword != "" ]]; then
-    echo "TOMCAT_PASSWORD: $tomcatAdminPassword" >> .docker-common.env
+    echo "TOMCAT_PASSWORD=$tomcatAdminPassword" >> .docker-common.env
   fi
   if [[ userpassword != "" ]]; then
-    echo "DEFAULT_ADMIN_USER_PASSWORD: $defaultUserPassword" >> .docker-common.env
+    echo "DEFAULT_ADMIN_USER_PASSWORD=$defaultUserPassword" >> .docker-common.env
   fi
 fi
 
