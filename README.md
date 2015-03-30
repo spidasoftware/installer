@@ -12,5 +12,5 @@ Default Installation
 
 A complete installation is completed by running the following command on the server
 
-`sudo curl -o install https://raw.githubusercontent.com/spidasoftware/installer/master/install && sudo chmod +x install && sudo ./install [[-tag tag] [-username dockerUsername] [-email dockerEmail] [-serverroot serverRoot] [-filesdir filesdir] [--no-spidamin] [--no-postgresql] [--no-mongodb] && sudo rm install`
+`sudo curl -o install https://raw.githubusercontent.com/spidasoftware/installer/master/install && sudo chmod +x install && sudo ./install [-tag tag] [-username dockerUsername] [-email dockerEmail] [-serverroot serverRoot] [-filesdir filesdir] [-dbpassword dbpassword] [-mongopassword mongopassword] [-tomcatpassword tomcatpassword] [--no-spidamin] [-userpassword userpassword] [--no-postgresql] [--no-mongodb] && sudo rm install`
 

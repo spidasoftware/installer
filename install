@@ -4,6 +4,10 @@ serverRoot=`hostname -f`
 tag="latest"
 username=""
 email=""
+databasePassword=""
+mongoPassword=""
+tomcatAdminPassword=""
+defaultUserPassword=""
 spidaMin=true
 postrgresql=true
 mongo=true
@@ -16,18 +20,26 @@ do
         -username)  username="$2"; shift;;
         -email)  email="$2"; shift;;
         -filesdir)  filesDir="$2"; shift;;
+        -dbpassword)  databasePassword="$2"; shift;;
+        -mongopassword)  mongoPassword="$2"; shift;;
+        -tomcatpassword)  tomcatAdminPassword="$2"; shift;;
+        -userpassword)  defaultUserPassword="$2"; shift;;
         --no-spidamin)  spidaMin=false;;
         --no-postgresql)  postrgresql=false;;
         --no-mongodb)  mongo=false;;
         *)
             echo >&2 \
-            "usage: $0 [-tag tag] [-username dockerUsername] [-email dockerEmail] [-serverroot serverRoot] [-filesdir filesdir] [--no-spidamin] [--no-postgresql] [--no-mongodb]
+            "usage: $0 [-tag tag] [-username dockerUsername] [-email dockerEmail] [-serverroot serverRoot] [-filesdir filesdir] [-dbpassword dbpassword] [-mongopassword mongopassword] [-tomcatpassword tomcatpassword] [--no-spidamin] [-userpassword userpassword] [--no-postgresql] [--no-mongodb]
               Options:
                 -tag              docker spidamin tag to deploy (defaults to latest)
                 -username         dockerhub username (will prompt for username if argument is not passed)
                 -email            dockerhub email (will prompt for email if argument is not passed)
                 -serverroot       server root that you will navigate to view the application (ex: min.com or min.com:8443)  
                 -filesdir         files directory that spidamin files will be stored in (defaults to /apps/spidamin/files)
+                -dbpassword       database password
+                -mongopassword    mongodb password
+                -tomcatpassword   tomcat admin password
+                -userpassword     default spidamin user password
                 --no-spidamin     don't install spidamin
                 --no-postgresql   don't install postgresql
                 --no-mongodb      don't install mongodb 
@@ -154,10 +166,33 @@ if [ $? -ne 0 ]; then
   exit -1
 fi
 
-echo "Creating the docker-compose file"
+echo "Creating the docker-compose.yml file"
+needEnvFile=false
+if [[ "$dbpassword" != "" ]] || [[ "$mongopassword" != "" ]] || [[ "$tomcatpassword" != "" ]] || [[ "$userpassword" != "" ]]; then
+  needEnvFile=true
+fi
+
 sudo rm -f docker-compose.yml
 sudo touch docker-compose.yml
 sudo chmod 666 docker-compose.yml
+if [[ $needEnvFile = true ]]; then
+  sudo rm -f .docker-common.env
+  sudo touch .docker-common.env
+  sudo chmod 666 .docker-common.env
+  if [[ "$dbpassword" != "" ]]; then
+    echo "DATABASE_PASSWORD: $dbpassword" >> .docker-common.env
+    echo "POSTGRES_PASSWORD: $dbpassword" >> .docker-common.env
+  fi
+  if [[ "$mongopassword" != "" ]]; then
+    echo "MONGO_PASSWORD: $mongopassword" >> .docker-common.env
+  fi
+  if [[ "$tomcatpassword" != "" ]]; then
+    echo "TOMCAT_PASSWORD: $tomcatpassword" >> .docker-common.env
+  fi
+  if [[ "$userpassword" != "" ]]; then
+    echo "DEFAULT_ADMIN_USER_PASSWORD: $userpassword" >> .docker-common.env
+  fi
+fi
 
 HOST_MACHINE_HOST_NAME=`hostname -f`
 if [[ $spidaMin = true ]]; then
@@ -167,11 +202,16 @@ if [[ $spidaMin = true ]]; then
   volumes:
     - $filesDir:/var/lib/spida/files
   environment:
-    - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME"
+    - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME" >> docker-compose.yml
+  
   if [[ "$serverRoot" != "" ]]; then
     echo "    - SERVER_ROOT=$serverRoot" >> docker-compose.yml
   fi
   
+  if [[ $needEnvFile = true ]]; then
+    echo "  env_file: .docker-common.env" >> docker-compose.yml
+  fi
+
   if [[ "$*" != *"--no-postgresql"* ]] || [[ "$*" != *"--no-mongodb"* ]] || [[ "$*" != *"--no-redis"* ]]; then
     echo "  links:" >> docker-compose.yml
   fi
@@ -196,6 +236,9 @@ if [[ $postrgresql = true ]]; then
   restart: always
   ports: 
     - \"5432:5432\"" >> docker-compose.yml
+    if [[ $needEnvFile = true ]]; then
+      echo "  env_file: .docker-common.env" >> docker-compose.yml
+    fi
 fi
 
 if [[ $mongo = true ]]; then
@@ -205,6 +248,9 @@ if [[ $mongo = true ]]; then
   ports: 
     - \"27017:27017\"
     - \"28017:28017\"" >> docker-compose.yml
+    if [[ $needEnvFile = true ]]; then
+      echo "  env_file: .docker-common.env" >> docker-compose.yml
+    fi
 fi
 
 if [[ $spidaMin = true ]]; then
