@@ -1,31 +1,47 @@
 #!/bin/bash
 
-hostName=`hostname -f`
+serverRoot=`hostname -f`
 tag="latest"
 username=""
 email=""
 spidaMin=true
 postrgresql=true
 mongo=true
+filesDir="/apps/spidamin/files"
 while [ $# -gt 0 ]
 do
-  echo "$1"
     case "$1" in
         -tag) tag="$2"; shift;;
-        -host)  hostName="$2"; shift;;
+        -serverroot)  serverRoot="$2"; shift;;
         -username)  username="$2"; shift;;
         -email)  email="$2"; shift;;
+        -filesdir)  filesDir="$2"; shift;;
         --no-spidamin)  spidaMin=false;;
         --no-postgresql)  postrgresql=false;;
         --no-mongodb)  mongo=false;;
         *)
             echo >&2 \
-            "usage: $0 [-tag tag] [-username dockerUsername] [-email dockerEmail] [-host host] [--no-spidamin] [--no-postgresql] [--no-mongodb]"
+            "usage: $0 [-tag tag] [-username dockerUsername] [-email dockerEmail] [-serverroot serverRoot] [-filesdir filesdir] [--no-spidamin] [--no-postgresql] [--no-mongodb]
+              Options:
+                -tag              docker spidamin tag to deploy (defaults to latest)
+                -username         dockerhub username (will prompt for username if argument is not passed)
+                -email            dockerhub email (will prompt for email if argument is not passed)
+                -serverroot       server root that you will navigate to view the application (ex: min.com or min.com:8443)  
+                -filesdir         files directory that spidamin files will be stored in (defaults to /apps/spidamin/files)
+                --no-spidamin     don't install spidamin
+                --no-postgresql   don't install postgresql
+                --no-mongodb      don't install mongodb 
+            "
             exit 1;;
         *)  break;; # terminate while loop
     esac
     shift
 done
+
+if [ ! -d "$filesDir" ]; then
+  echo "$filesDir does not exist, exiting"
+  exit -1
+fi
 
 OS=`cat /etc/issue`
 VERSION=$(egrep -o "[0-9]{1,}\.[0-9]{1,}" <<< "$OS")
@@ -148,17 +164,25 @@ if [[ $spidaMin = true ]]; then
   echo "spidamin: 
   image: spidasoftware/min:$tag 
   restart: always 
+  volumes:
+    - $filesDir:/var/lib/spida/files
   environment:
-    - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME
-  links:" >> docker-compose.yml
+    - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME"
+  if [[ "$serverRoot" != "" ]]; then
+    echo "    - SERVER_ROOT=$serverRoot" >> docker-compose.yml
+  fi
+  
+  if [[ "$*" != *"--no-postgresql"* ]] || [[ "$*" != *"--no-mongodb"* ]] || [[ "$*" != *"--no-redis"* ]]; then
+    echo "  links:" >> docker-compose.yml
+  fi
   if [[ "$*" != *"--no-postgresql"* ]]; then
-echo "   - postgresql" >> docker-compose.yml
+    echo "   - postgresql" >> docker-compose.yml
   fi
   if [[ "$*" != *"--no-mongodb"* ]]; then
-echo "   - mongodb" >> docker-compose.yml
+    echo "   - mongodb" >> docker-compose.yml
   fi
   if [[ "$*" != *"--no-redis"* ]]; then
-echo "   - redis" >> docker-compose.yml
+    echo "   - redis" >> docker-compose.yml
   fi
 
 echo "  ports: 
