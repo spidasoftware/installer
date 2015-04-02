@@ -1,6 +1,14 @@
 #!/bin/bash
 
+read -p "Docker username: " username
+read -p "Docker email: " email
+read  -s -p "Docker password: " dockerPassword
+
+sudo docker login -u $username -e $email -p $dockerPassword
+
 sudo docker-compose stop
 sudo docker-compose rm --force
 sudo docker-compose pull
 sudo docker-compose up -d
+
+sudo docker logout

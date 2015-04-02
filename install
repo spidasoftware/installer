@@ -261,3 +261,5 @@ fi
 
 # Start docker
 sudo docker-compose up -d
+
+sudo docker logout
