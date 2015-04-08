@@ -262,7 +262,7 @@ if [[ $mongo = true ]]; then
   volumes:
     - $mongoBackupDir:/backups" >> docker-compose.yml
     if [[ "$mongoDataDir" != "" ]]; then
-      echo "    - $mongoDataDir:/data" >> docker-compose.yml
+      echo "    - $mongoDataDir:/data/db" >> docker-compose.yml
     fi
     if [[ $needEnvFile = true ]]; then
       echo "  env_file: .docker-common.env" >> docker-compose.yml
