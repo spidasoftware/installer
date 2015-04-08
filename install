@@ -14,6 +14,7 @@ mongo=true
 filesDir="/apps/spidamin/files"
 mongoBackupDir="/apps/spidamin/backups/mongodb"
 postgresBackupDir="/apps/spidamin/backups/postgres"
+mongoDataDir=""
 while [ $# -gt 0 ]
 do
     case "$1" in
@@ -28,6 +29,7 @@ do
         -userpassword)  defaultUserPassword="$2"; shift;;
         -mongobackupdir)  mongoBackupDir="$2"; shift;;
         -postgresbackupdir)  postgresBackupDir="$2"; shift;;
+        -mongodatadir)  mongoDataDir="$2"; shift;;
         --no-spidamin)  spidaMin=false;;
         --no-postgresql)  postrgresql=false;;
         --no-mongodb)  mongo=false;;
@@ -42,6 +44,7 @@ do
                 -filesdir          files directory that spidamin files will be stored in (defaults to /apps/spidamin/files)
                 -mongobackupdir    directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/mongodb)
                 -postgresbackupdir directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/postgres)
+                -mongodatadir      mongodb data directory (defaults to /apps/spidamin/mongodb/data)
                 -dbpassword        database password
                 -mongopassword     mongodb password
                 -tomcatpassword    tomcat admin password
@@ -56,8 +59,8 @@ do
     shift
 done
 
-if [[ ! -d "$filesDir" ]] || [[ ! -d "$mongoBackupDir" ]] || [[ ! -d "$postgresBackupDir" ]]; then
-  echo "$filesDir, $mongoBackupDir or  $postgresBackupDir does not exist, exiting"
+if [[ ! -d "$filesDir" ]] || [[ ! -d "$mongoBackupDir" ]] || [[ ! -d "$postgresBackupDir" ]] || [[ "$mongoDataDir" != "" && ! -d "$mongoDataDir" ]]; then
+  echo "$filesDir, $mongoBackupDir, $postgresBackupDir or $mongoDataDir does not exist, exiting"
   exit -1
 fi
 
@@ -185,17 +188,17 @@ if [[ $needEnvFile = true ]]; then
   sudo rm -f .docker-common.env
   sudo touch .docker-common.env
   sudo chmod 666 .docker-common.env
-  if [[ dbpassword != "" ]]; then
+  if [[ "$databasePassword" != "" ]]; then
     echo "DATABASE_PASSWORD=$databasePassword" >> .docker-common.env
     echo "POSTGRES_PASSWORD=$databasePassword" >> .docker-common.env
   fi
-  if [[ mongopassword != "" ]]; then
+  if [[ "$mongoPassword" != "" ]]; then
     echo "MONGODB_PASSWORD=$mongoPassword" >> .docker-common.env
   fi
-  if [[ tomcatpassword != "" ]]; then
+  if [[ "$tomcatAdminPassword" != "" ]]; then
     echo "TOMCAT_PASSWORD=$tomcatAdminPassword" >> .docker-common.env
   fi
-  if [[ userpassword != "" ]]; then
+  if [[ "$defaultUserPassword" != "" ]]; then
     echo "ADMIN_USER_PASSWORD=$defaultUserPassword" >> .docker-common.env
   fi
 fi
@@ -243,7 +246,7 @@ if [[ $postrgresql = true ]]; then
   ports: 
     - \"5432:5432\"
   volumes:
-    - $postgresBackupDir:/backups/postgres" >> docker-compose.yml
+    - $postgresBackupDir:/backups" >> docker-compose.yml
     if [[ $needEnvFile = true ]]; then
       echo "  env_file: .docker-common.env" >> docker-compose.yml
     fi
@@ -257,7 +260,10 @@ if [[ $mongo = true ]]; then
     - \"27017:27017\"
     - \"28017:28017\"
   volumes:
-    - $mongoBackupDir:/backups/mongodb" >> docker-compose.yml
+    - $mongoBackupDir:/backups" >> docker-compose.yml
+    if [[ "$mongoBackupDir" != "" ]]; then
+      "    - $mongoDataDir:/data" >> docker-compose.yml
+    fi
     if [[ $needEnvFile = true ]]; then
       echo "  env_file: .docker-common.env" >> docker-compose.yml
     fi
