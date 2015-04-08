@@ -182,7 +182,6 @@ if [[ $needEnvFile = true ]]; then
   sudo chmod 666 .docker-common.env
   if [[ dbpassword != "" ]]; then
     echo "DATABASE_PASSWORD=$databasePassword" >> .docker-common.env
-    echo "POSTGRES_PASSWORD=$databasePassword" >> .docker-common.env
   fi
   if [[ mongopassword != "" ]]; then
     echo "MONGODB_PASSWORD=$mongoPassword" >> .docker-common.env
