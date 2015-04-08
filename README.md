@@ -25,6 +25,9 @@ Install Script Options
 * -mongopassword    mongodb password
 * -tomcatpassword   tomcat admin password
 * -userpassword     default spidamin user password
+* -mongobackupdir    directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/mongodb)
+* -postgresbackupdir directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/postgres)
+* -mongodatadir      mongodb data directory (defaults to not mounted)
 * --no-spidamin     don't install spidamin
 * --no-postgresql   don't install postgresql
 * --no-mongodb      don't install mongodb

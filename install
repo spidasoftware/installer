@@ -35,7 +35,7 @@ do
         --no-mongodb)  mongo=false;;
         *)
             echo >&2 \
-            "usage: $0 [-tag tag] [-username dockerUsername] [-email dockerEmail] [-serverroot serverRoot] [-filesdir filesdir] [-dbpassword dbpassword] [-mongopassword mongopassword] [-tomcatpassword tomcatpassword] [-mongobackupdir mongobackupdir] [-postgresbackupdir postgresbackupdir][--no-spidamin] [-userpassword userpassword] [--no-postgresql] [--no-mongodb]
+            "usage: $0 [-tag tag] [-username dockerUsername] [-email dockerEmail] [-serverroot serverRoot] [-filesdir filesdir] [-dbpassword dbpassword] [-mongopassword mongopassword] [-tomcatpassword tomcatpassword] [-mongobackupdir mongobackupdir] [-postgresbackupdir postgresbackupdir] [-mongodatadir mongodatadir] [--no-spidamin] [-userpassword userpassword] [--no-postgresql] [--no-mongodb]
               Options:
                 -tag               docker spidamin tag to deploy (defaults to latest)
                 -username          dockerhub username (will prompt for username if argument is not passed)
@@ -44,7 +44,7 @@ do
                 -filesdir          files directory that spidamin files will be stored in (defaults to /apps/spidamin/files)
                 -mongobackupdir    directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/mongodb)
                 -postgresbackupdir directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/postgres)
-                -mongodatadir      mongodb data directory (defaults to /apps/spidamin/mongodb/data)
+                -mongodatadir      mongodb data directory (defaults to not mounted)
                 -dbpassword        database password
                 -mongopassword     mongodb password
                 -tomcatpassword    tomcat admin password
