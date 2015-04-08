@@ -261,7 +261,7 @@ if [[ $mongo = true ]]; then
     - \"28017:28017\"
   volumes:
     - $mongoBackupDir:/backups" >> docker-compose.yml
-    if [[ "$mongoBackupDir" != "" ]]; then
+    if [[ "$mongoDataDir" != "" ]]; then
       echo "    - $mongoDataDir:/data" >> docker-compose.yml
     fi
     if [[ $needEnvFile = true ]]; then
