@@ -12,6 +12,7 @@ spidaMin=true
 postrgresql=true
 mongo=true
 filesDir="/apps/spidamin/files"
+mongoDir="/apps/spidamin"
 while [ $# -gt 0 ]
 do
     case "$1" in
@@ -184,13 +185,13 @@ if [[ $needEnvFile = true ]]; then
     echo "POSTGRES_PASSWORD=$databasePassword" >> .docker-common.env
   fi
   if [[ mongopassword != "" ]]; then
-    echo "MONGO_PASSWORD=$mongoPassword" >> .docker-common.env
+    echo "MONGODB_PASSWORD=$mongoPassword" >> .docker-common.env
   fi
   if [[ tomcatpassword != "" ]]; then
     echo "TOMCAT_PASSWORD=$tomcatAdminPassword" >> .docker-common.env
   fi
   if [[ userpassword != "" ]]; then
-    echo "DEFAULT_ADMIN_USER_PASSWORD=$defaultUserPassword" >> .docker-common.env
+    echo "ADMIN_USER_PASSWORD=$defaultUserPassword" >> .docker-common.env
   fi
 fi
 
