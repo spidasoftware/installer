@@ -12,7 +12,8 @@ spidaMin=true
 postrgresql=true
 mongo=true
 filesDir="/apps/spidamin/files"
-mongoDir="/apps/spidamin"
+mongoBackupDir="/apps/spidamin/backups/mongodb"
+postgresBackupDir="/apps/spidamin/backups/postgres"
 while [ $# -gt 0 ]
 do
     case "$1" in
@@ -25,25 +26,29 @@ do
         -mongopassword)  mongoPassword="$2"; shift;;
         -tomcatpassword)  tomcatAdminPassword="$2"; shift;;
         -userpassword)  defaultUserPassword="$2"; shift;;
+        -mongobackupdir)  mongoBackupDir="$2"; shift;;
+        -postgresbackupdir)  postgresBackupDir="$2"; shift;;
         --no-spidamin)  spidaMin=false;;
         --no-postgresql)  postrgresql=false;;
         --no-mongodb)  mongo=false;;
         *)
             echo >&2 \
-            "usage: $0 [-tag tag] [-username dockerUsername] [-email dockerEmail] [-serverroot serverRoot] [-filesdir filesdir] [-dbpassword dbpassword] [-mongopassword mongopassword] [-tomcatpassword tomcatpassword] [--no-spidamin] [-userpassword userpassword] [--no-postgresql] [--no-mongodb]
+            "usage: $0 [-tag tag] [-username dockerUsername] [-email dockerEmail] [-serverroot serverRoot] [-filesdir filesdir] [-dbpassword dbpassword] [-mongopassword mongopassword] [-tomcatpassword tomcatpassword] [-mongobackupdir mongobackupdir] [-postgresbackupdir postgresbackupdir][--no-spidamin] [-userpassword userpassword] [--no-postgresql] [--no-mongodb]
               Options:
-                -tag              docker spidamin tag to deploy (defaults to latest)
-                -username         dockerhub username (will prompt for username if argument is not passed)
-                -email            dockerhub email (will prompt for email if argument is not passed)
-                -serverroot       server root that you will navigate to view the application (ex: min.com or min.com:8443)  
-                -filesdir         files directory that spidamin files will be stored in (defaults to /apps/spidamin/files)
-                -dbpassword       database password
-                -mongopassword    mongodb password
-                -tomcatpassword   tomcat admin password
-                -userpassword     default spidamin user password
-                --no-spidamin     don't install spidamin
-                --no-postgresql   don't install postgresql
-                --no-mongodb      don't install mongodb 
+                -tag               docker spidamin tag to deploy (defaults to latest)
+                -username          dockerhub username (will prompt for username if argument is not passed)
+                -email             dockerhub email (will prompt for email if argument is not passed)
+                -serverroot        server root that you will navigate to view the application (ex: min.com or min.com:8443)  
+                -filesdir          files directory that spidamin files will be stored in (defaults to /apps/spidamin/files)
+                -mongobackupdir    directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/mongodb)
+                -postgresbackupdir directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/postgres)
+                -dbpassword        database password
+                -mongopassword     mongodb password
+                -tomcatpassword    tomcat admin password
+                -userpassword      default spidamin user password
+                --no-spidamin      don't install spidamin
+                --no-postgresql    don't install postgresql
+                --no-mongodb       don't install mongodb 
             "
             exit 1;;
         *)  break;; # terminate while loop
@@ -51,8 +56,8 @@ do
     shift
 done
 
-if [ ! -d "$filesDir" ]; then
-  echo "$filesDir does not exist, exiting"
+if [ ! -d "$filesDir" || ! -d "$mongoBackupDir" || ! -d "$postgresBackupDir" ]; then
+  echo "$filesDir, $mongoBackupDir or  $postgresBackupDir does not exist, exiting"
   exit -1
 fi
 
@@ -163,7 +168,7 @@ read  -s -p "Docker password: " dockerPassword
 sudo docker login -u $username -e $email -p $dockerPassword
 
 if [ $? -ne 0 ]; then
-  echo "loging failed, exiting."
+  echo "login failed, exiting."
   exit -1
 fi
 
@@ -236,7 +241,9 @@ if [[ $postrgresql = true ]]; then
   image: spidasoftware/postgresql 
   restart: always
   ports: 
-    - \"5432:5432\"" >> docker-compose.yml
+    - \"5432:5432\"
+  volumes:
+    - $postgresBackupDir:/backups/postgres" >> docker-compose.yml
     if [[ $needEnvFile = true ]]; then
       echo "  env_file: .docker-common.env" >> docker-compose.yml
     fi
@@ -248,7 +255,9 @@ if [[ $mongo = true ]]; then
   restart: always
   ports: 
     - \"27017:27017\"
-    - \"28017:28017\"" >> docker-compose.yml
+    - \"28017:28017\"
+  volumes:
+    - $mongoBackupDir:/backups/mongodb" >> docker-compose.yml
     if [[ $needEnvFile = true ]]; then
       echo "  env_file: .docker-common.env" >> docker-compose.yml
     fi
