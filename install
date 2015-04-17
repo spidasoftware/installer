@@ -14,267 +14,281 @@ mongo=true
 filesDir="/apps/spidamin/files"
 mongoBackupDir="/apps/spidamin/backups/mongodb"
 postgresBackupDir="/apps/spidamin/backups/postgres"
-mongoDataDir=""
-while [ $# -gt 0 ]
-do
-    case "$1" in
-        -tag) tag="$2"; shift;;
-        -serverroot)  serverRoot="$2"; shift;;
-        -username)  username="$2"; shift;;
-        -email)  email="$2"; shift;;
-        -filesdir)  filesDir="$2"; shift;;
-        -dbpassword)  databasePassword="$2"; shift;;
-        -mongopassword)  mongoPassword="$2"; shift;;
-        -tomcatpassword)  tomcatAdminPassword="$2"; shift;;
-        -userpassword)  defaultUserPassword="$2"; shift;;
-        -mongobackupdir)  mongoBackupDir="$2"; shift;;
-        -postgresbackupdir)  postgresBackupDir="$2"; shift;;
-        -mongodatadir)  mongoDataDir="$2"; shift;;
-        --no-spidamin)  spidaMin=false;;
-        --no-postgresql)  postrgresql=false;;
-        --no-mongodb)  mongo=false;;
-        *)
-            echo >&2 \
-            "usage: $0 [-tag tag] [-username dockerUsername] [-email dockerEmail] [-serverroot serverRoot] [-filesdir filesdir] [-dbpassword dbpassword] [-mongopassword mongopassword] [-tomcatpassword tomcatpassword] [-mongobackupdir mongobackupdir] [-postgresbackupdir postgresbackupdir] [-mongodatadir mongodatadir] [--no-spidamin] [-userpassword userpassword] [--no-postgresql] [--no-mongodb]
-              Options:
-                -tag               docker spidamin tag to deploy (defaults to latest)
-                -username          dockerhub username (will prompt for username if argument is not passed)
-                -email             dockerhub email (will prompt for email if argument is not passed)
-                -serverroot        server root that you will navigate to view the application (ex: min.com or min.com:8443)  
-                -filesdir          files directory that spidamin files will be stored in (defaults to /apps/spidamin/files)
-                -mongobackupdir    directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/mongodb)
-                -postgresbackupdir directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/postgres)
-                -mongodatadir      mongodb data directory (defaults to not mounted)
-                -dbpassword        database password
-                -mongopassword     mongodb password
-                -tomcatpassword    tomcat admin password
-                -userpassword      default spidamin user password
-                --no-spidamin      don't install spidamin
-                --no-postgresql    don't install postgresql
-                --no-mongodb       don't install mongodb 
-            "
-            exit 1;;
-        *)  break;; # terminate while loop
-    esac
-    shift
-done
+apacheTag="latest"
 
-if [[ ! -d "$filesDir" ]] || [[ ! -d "$mongoBackupDir" ]] || [[ ! -d "$postgresBackupDir" ]] || [[ "$mongoDataDir" != "" && ! -d "$mongoDataDir" ]]; then
-  echo "$filesDir, $mongoBackupDir, $postgresBackupDir or $mongoDataDir does not exist, exiting"
-  exit -1
-fi
+function parseCommandLineArguments() {
+  while [ $# -gt 0 ]
+  do
+      case "$1" in
+          -tag) tag="$2"; shift;;
+          -apachetag)  apacheTag="$2"; shift;;
+          -serverroot)  serverRoot="$2"; shift;;
+          -username)  username="$2"; shift;;
+          -email)  email="$2"; shift;;
+          -filesdir)  filesDir="$2"; shift;;
+          -dbpassword)  databasePassword="$2"; shift;;
+          -mongopassword)  mongoPassword="$2"; shift;;
+          -tomcatpassword)  tomcatAdminPassword="$2"; shift;;
+          -userpassword)  defaultUserPassword="$2"; shift;;
+          -mongobackupdir)  mongoBackupDir="$2"; shift;;
+          -postgresbackupdir)  postgresBackupDir="$2"; shift;;
+          -mongodatadir)  mongoDataDir="$2"; shift;;
+          --no-spidamin)  spidaMin=false;;
+          --no-postgresql)  postrgresql=false;;
+          --no-mongodb)  mongo=false;;
+          *)
+              echo >&2 \
+              "usage: $0 [-tag tag] [-username dockerUsername] [-email dockerEmail] [-serverroot serverRoot] [-filesdir filesdir] [-dbpassword dbpassword] [-mongopassword mongopassword] [-tomcatpassword tomcatpassword] [-mongobackupdir mongobackupdir] [-postgresbackupdir postgresbackupdir] [-mongodatadir mongodatadir] [--no-spidamin] [-userpassword userpassword] [--no-postgresql] [--no-mongodb]
+                Options:
+                  -tag               docker spidamin tag to deploy (defaults to latest)
+                  -username          dockerhub username (will prompt for username if argument is not passed)
+                  -email             dockerhub email (will prompt for email if argument is not passed)
+                  -serverroot        server root that you will navigate to view the application (ex: min.com or min.com:8443)  
+                  -filesdir          files directory that spidamin files will be stored in (defaults to /apps/spidamin/files)
+                  -mongobackupdir    directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/mongodb)
+                  -postgresbackupdir directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/postgres)
+                  -mongodatadir      mongodb data directory (defaults to not mounted)
+                  -dbpassword        database password
+                  -mongopassword     mongodb password
+                  -tomcatpassword    tomcat admin password
+                  -userpassword      default spidamin user password
+                  --no-spidamin      don't install spidamin
+                  --no-postgresql    don't install postgresql
+                  --no-mongodb       don't install mongodb 
+              "
+              exit 1;;
+          *)  break;; # terminate while loop
+      esac
+      shift
+  done
 
-OS=`cat /etc/issue`
-VERSION=$(egrep -o "[0-9]{1,}\.[0-9]{1,}" <<< "$OS")
+  if [[ ! -d "$filesDir" ]] || [[ ! -d "$mongoBackupDir" ]] || [[ ! -d "$postgresBackupDir" ]] || [[ "$mongoDataDir" != "" && ! -d "$mongoDataDir" ]]; then
+    echo "$filesDir, $mongoBackupDir, $postgresBackupDir or $mongoDataDir does not exist, exiting"
+    exit 1
+  fi
+}
 
-### First get Docker
-### ---------------------------------------
+function installDocker() {
+  OS=`cat /etc/issue`
+  VERSION=$(egrep -o "[0-9]{1,}\.[0-9]{1,}" <<< "$OS")
 
-#### Ubuntu Section
-if [[ $OS == *"Ubuntu"* ]]; then
-  echo "Ubuntu $VERSION"
-  if(( $(bc <<< "$VERSION < 14.0") == 1 )); then
-    echo "$VERSION is not a supported Ubuntu Version, need > 14.04"
-    exit -1
-  else
+  ### First get Docker
+  ### ---------------------------------------
+
+  #### Ubuntu Section
+  if [[ $OS == *"Ubuntu"* ]]; then
+    echo "Ubuntu $VERSION"
+    if(( $(bc <<< "$VERSION < 14.0") == 1 )); then
+      echo "$VERSION is not a supported Ubuntu Version, need > 14.04"
+      exit 1
+    else
+      sudo docker --version
+      if [ $? -ne 0 ]; then
+        echo "docker not installed...installing"
+        # Check that HTTPS transport is available to APT
+        if [ ! -e /usr/lib/apt/methods/https ]; then
+          sudo apt-get update
+          sudo apt-get install -y apt-transport-https
+        fi
+
+        # Add the repository to your APT sources
+        sudo echo deb https://get.docker.com/ubuntu docker main > /etc/apt/sources.list.d/docker.list
+
+        # Then import the repository key
+        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
+
+        # Install docker
+        sudo apt-get update
+        sudo apt-get install -y lxc-docker
+        sudo source /etc/bash_completion.d/docker.io 
+
+        sudo docker --version
+      fi
+    fi
+
+  #### RHEL Section
+  elif [[ $OS == *"Red Hat Enterprise Linux Server"* ]]; then
+    echo "RHEL $VERSION"
+    sudo yum update
+
+    if(( $(bc <<< "$VERSION < 6.5") == 1 )); then
+      echo "$VERSION is not a supported RHEL Version, need > 6.5"
+      exit 1
+    fi
+
     sudo docker --version
     if [ $? -ne 0 ]; then
       echo "docker not installed...installing"
-      # Check that HTTPS transport is available to APT
-      if [ ! -e /usr/lib/apt/methods/https ]; then
-        sudo apt-get update
-        sudo apt-get install -y apt-transport-https
+      if(( $(bc <<< "$VERSION > 6.99") == 1 )); then
+        # 7.0 plus
+        sudo subscription-manager repos --enable=rhel-7-server-extras-rpms
+        sudo yum -y install docker
+      else
+        # 6.5 but less than 7 
+        sudo yum -y remove docker
+        sudo yum -y install docker-io
+        sudo yum -y update docker-io
       fi
-
-      # Add the repository to your APT sources
-      sudo echo deb https://get.docker.com/ubuntu docker main > /etc/apt/sources.list.d/docker.list
-
-      # Then import the repository key
-      sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
-
-      # Install docker
-      sudo apt-get update
-      sudo apt-get install -y lxc-docker
-      sudo source /etc/bash_completion.d/docker.io 
-
       sudo docker --version
     fi
+
+    #Start the service
+    sudo service docker start
+    sudo chkconfig docker on
+
+  #### SUSE Section - Check this on a SUSE system
+  # elif [[ $OS == *"SUSE"* ]]; then
+    # if(( $(bc <<< "$VERSION == 12.3") == 1 )); then
+    #   sudo zypper ar -f http://download.opensuse.org/repositories/Virtualization/openSUSE_12.3/ Virtualization
+    # elif(( $(bc <<< "$VERSION == 13.1") == 1 )); then
+    #   sudo zypper ar -f http://download.opensuse.org/repositories/Virtualization/openSUSE_13.1/ Virtualization
+    # elif(( $(bc <<< "$VERSION < 13") == 1 )); then
+    #   echo "$VERSION is not a supported SUSE Version, need 12.3 or 13.1"
+    #   exit 1
+    # fi
+    # sudo zypper in docker
+    # sudo systemctl start docker
+    # sudo systemctl enable docker
+
+  else
+    echo "$OS is not a supported OS"
+    exit 1
   fi
 
-#### RHEL Section
-elif [[ $OS == *"Red Hat Enterprise Linux Server"* ]]; then
-  echo "RHEL $VERSION"
-  sudo yum update
-
-  if(( $(bc <<< "$VERSION < 6.5") == 1 )); then
-    echo "$VERSION is not a supported RHEL Version, need > 6.5"
-    exit -1
-  fi
-
-  sudo docker --version
+  sudo docker-compose --version
   if [ $? -ne 0 ]; then
-    echo "docker not installed...installing"
-    if(( $(bc <<< "$VERSION > 6.99") == 1 )); then
-      # 7.0 plus
-      sudo subscription-manager repos --enable=rhel-7-server-extras-rpms
-      sudo yum -y install docker
-    else
-      # 6.5 but less than 7 
-      sudo yum -y remove docker
-      sudo yum -y install docker-io
-      sudo yum -y update docker-io
+    echo "docker-compose not installed...installing"
+    sudo curl -L https://github.com/docker/compose/releases/download/1.1.0/docker-compose-`uname -s`-`uname -m` > docker-compose
+    sudo mv docker-compose /usr/local/bin/docker-compose
+    sudo chmod +x /usr/local/bin/docker-compose
+
+    docker-compose --version
+  fi
+}
+
+function dockerLogin() {
+  if [[ "$username" = "" ]]; then
+    read -p "Docker username: " username
+  fi
+  if [[ "$email" = "" ]]; then
+    read -p "Docker email: " email
+  fi
+  read  -s -p "Docker password: " dockerPassword
+
+  sudo docker login -u $username -e $email -p $dockerPassword
+
+  if [ $? -ne 0 ]; then
+    echo "login failed, exiting."
+    exit 1
+  fi
+}
+
+function createDockerComposeFile() {
+  echo "Creating the docker-compose.yml file"
+  needEnvFile=false
+  if [[ "$databasePassword" != "" || "$mongoPassword" != "" || "$tomcatAdminPassword" != "" || "$defaultUserPassword" != "" ]]; then
+    needEnvFile=true
+  fi
+
+  sudo rm -f docker-compose.yml
+  sudo touch docker-compose.yml
+  sudo chmod 666 docker-compose.yml
+  if [[ $needEnvFile = true ]]; then
+    sudo rm -f .docker-common.env
+    sudo touch .docker-common.env
+    sudo chmod 666 .docker-common.env
+    if [[ "$databasePassword" != "" ]]; then
+      echo "DATABASE_PASSWORD=$databasePassword" >> .docker-common.env
+      echo "POSTGRES_PASSWORD=$databasePassword" >> .docker-common.env
     fi
-    sudo docker --version
+    if [[ "$mongoPassword" != "" ]]; then
+      echo "MONGODB_PASSWORD=$mongoPassword" >> .docker-common.env
+    fi
+    if [[ "$tomcatAdminPassword" != "" ]]; then
+      echo "TOMCAT_PASSWORD=$tomcatAdminPassword" >> .docker-common.env
+    fi
+    if [[ "$defaultUserPassword" != "" ]]; then
+      echo "ADMIN_USER_PASSWORD=$defaultUserPassword" >> .docker-common.env
+    fi
   fi
 
-  #Start the service
-  sudo service docker start
-  sudo chkconfig docker on
-
-#### SUSE Section - Check this on a SUSE system
-# elif [[ $OS == *"SUSE"* ]]; then
-  # if(( $(bc <<< "$VERSION == 12.3") == 1 )); then
-  #   sudo zypper ar -f http://download.opensuse.org/repositories/Virtualization/openSUSE_12.3/ Virtualization
-  # elif(( $(bc <<< "$VERSION == 13.1") == 1 )); then
-  #   sudo zypper ar -f http://download.opensuse.org/repositories/Virtualization/openSUSE_13.1/ Virtualization
-  # elif(( $(bc <<< "$VERSION < 13") == 1 )); then
-  #   echo "$VERSION is not a supported SUSE Version, need 12.3 or 13.1"
-  #   exit -1
-  # fi
-  # sudo zypper in docker
-  # sudo systemctl start docker
-  # sudo systemctl enable docker
-
-else
-  echo "$OS is not a supported OS"
-  exit -1
-fi
-
-sudo docker-compose --version
-if [ $? -ne 0 ]; then
-  echo "docker-compose not installed...installing"
-  sudo curl -L https://github.com/docker/compose/releases/download/1.1.0/docker-compose-`uname -s`-`uname -m` > docker-compose
-  sudo mv docker-compose /usr/local/bin/docker-compose
-  sudo chmod +x /usr/local/bin/docker-compose
-
-  docker-compose --version
-fi
-
-if [[ "$username" = "" ]]; then
-  read -p "Docker username: " username
-fi
-if [[ "$email" = "" ]]; then
-  read -p "Docker email: " email
-fi
-read  -s -p "Docker password: " dockerPassword
-
-sudo docker login -u $username -e $email -p $dockerPassword
-
-if [ $? -ne 0 ]; then
-  echo "login failed, exiting."
-  exit -1
-fi
-
-echo "Creating the docker-compose.yml file"
-needEnvFile=false
-if [[ "$databasePassword" != "" || "$mongoPassword" != "" || "$tomcatAdminPassword" != "" || "$defaultUserPassword" != "" ]]; then
-  needEnvFile=true
-fi
-
-sudo rm -f docker-compose.yml
-sudo touch docker-compose.yml
-sudo chmod 666 docker-compose.yml
-if [[ $needEnvFile = true ]]; then
-  sudo rm -f .docker-common.env
-  sudo touch .docker-common.env
-  sudo chmod 666 .docker-common.env
-  if [[ "$databasePassword" != "" ]]; then
-    echo "DATABASE_PASSWORD=$databasePassword" >> .docker-common.env
-    echo "POSTGRES_PASSWORD=$databasePassword" >> .docker-common.env
-  fi
-  if [[ "$mongoPassword" != "" ]]; then
-    echo "MONGODB_PASSWORD=$mongoPassword" >> .docker-common.env
-  fi
-  if [[ "$tomcatAdminPassword" != "" ]]; then
-    echo "TOMCAT_PASSWORD=$tomcatAdminPassword" >> .docker-common.env
-  fi
-  if [[ "$defaultUserPassword" != "" ]]; then
-    echo "ADMIN_USER_PASSWORD=$defaultUserPassword" >> .docker-common.env
-  fi
-fi
-
-HOST_MACHINE_HOST_NAME=`hostname -f`
-if [[ $spidaMin = true ]]; then
-  echo "spidamin: 
+  HOST_MACHINE_HOST_NAME=`hostname -f`
+  if [[ $spidaMin = true ]]; then
+    echo "spidamin: 
   image: spidasoftware/min:$tag 
   restart: always 
   volumes:
     - $filesDir:/var/lib/spida/files
   environment:
     - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME" >> docker-compose.yml
-  
-  if [[ "$serverRoot" != "" ]]; then
-    echo "    - SERVER_ROOT=$serverRoot" >> docker-compose.yml
-  fi
-  
-  if [[ $needEnvFile = true ]]; then
-    echo "  env_file: .docker-common.env" >> docker-compose.yml
+    
+    if [[ "$serverRoot" != "" ]]; then
+      echo "    - SERVER_ROOT=$serverRoot" >> docker-compose.yml
+    fi
+    
+    if [[ $needEnvFile = true ]]; then
+      echo "  env_file: .docker-common.env" >> docker-compose.yml
+    fi
+
+    if [[ "$*" != *"--no-postgresql"* ]] || [[ "$*" != *"--no-mongodb"* ]] || [[ "$*" != *"--no-redis"* ]]; then
+      echo "  links:" >> docker-compose.yml
+    fi
+    if [[ "$*" != *"--no-postgresql"* ]]; then
+      echo "    - postgresql" >> docker-compose.yml
+    fi
+    if [[ "$*" != *"--no-mongodb"* ]]; then
+      echo "    - mongodb" >> docker-compose.yml
+    fi
+    if [[ "$*" != *"--no-redis"* ]]; then
+      echo "    - redis" >> docker-compose.yml
+    fi
   fi
 
-  if [[ "$*" != *"--no-postgresql"* ]] || [[ "$*" != *"--no-mongodb"* ]] || [[ "$*" != *"--no-redis"* ]]; then
-    echo "  links:" >> docker-compose.yml
-  fi
-  if [[ "$*" != *"--no-postgresql"* ]]; then
-    echo "   - postgresql" >> docker-compose.yml
-  fi
-  if [[ "$*" != *"--no-mongodb"* ]]; then
-    echo "   - mongodb" >> docker-compose.yml
-  fi
-  if [[ "$*" != *"--no-redis"* ]]; then
-    echo "   - redis" >> docker-compose.yml
-  fi
-
-echo "  ports: 
-    - \"8080:8080\" 
-    - \"8443:8443\"" >> docker-compose.yml
-fi
-
-if [[ $postrgresql = true ]]; then
-  echo "postgresql: 
+  if [[ $postrgresql = true ]]; then
+    echo "postgresql: 
   image: spidasoftware/postgresql 
   restart: always
-  ports: 
-    - \"5432:5432\"
   volumes:
     - $postgresBackupDir:/backups" >> docker-compose.yml
-    if [[ $needEnvFile = true ]]; then
-      echo "  env_file: .docker-common.env" >> docker-compose.yml
-    fi
-fi
+      if [[ $needEnvFile = true ]]; then
+        echo "  env_file: .docker-common.env" >> docker-compose.yml
+      fi
+  fi
 
-if [[ $mongo = true ]]; then
-  echo "mongodb: 
+  if [[ $mongo = true ]]; then
+    echo "mongodb: 
   image: spidasoftware/mongodb 
   restart: always
-  ports: 
-    - \"27017:27017\"
-    - \"28017:28017\"
   volumes:
     - $mongoBackupDir:/backups" >> docker-compose.yml
-    if [[ "$mongoDataDir" != "" ]]; then
-      echo "    - $mongoDataDir:/data/db" >> docker-compose.yml
-    fi
-    if [[ $needEnvFile = true ]]; then
-      echo "  env_file: .docker-common.env" >> docker-compose.yml
-    fi
-fi
+      if [[ "$mongoDataDir" != "" ]]; then
+        echo "      - $mongoDataDir:/data/db" >> docker-compose.yml
+      fi
+      if [[ $needEnvFile = true ]]; then
+        echo "  env_file: .docker-common.env" >> docker-compose.yml
+      fi
+  fi
 
-if [[ $spidaMin = true ]]; then
-  echo "redis: 
+  if [[ $spidaMin = true ]]; then
+    echo "redis: 
   image: spidasoftware/redis 
   restart: always" >> docker-compose.yml
-fi
 
+    echo "apache:
+  image: spidasoftware/apache:$apacheTag
+  restart: always
+  links:
+    - spidamin
+  ports:
+    - \"80:80\"
+    - \"443:443\"" >> docker-compose.yml
+  fi
+}
+
+parseCommandLineArguments $@
+installDocker
+dockerLogin
+createDockerComposeFile
 # Start docker
 sudo docker-compose up -d
 
