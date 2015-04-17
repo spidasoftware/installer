@@ -34,9 +34,12 @@ Install Script Options
 * --no-mongodb      don't install mongodb
 
 Example Development Machine Install Command:
+
 `sudo curl -o install https://raw.githubusercontent.com/spidasoftware/installer/master/install && sudo chmod +x install && sudo ./install -serverroot developmentserver.com:8443 -filesdir /apps/files -dbpassword password -mongopassword password -tomcatpassword password -userpassword password && sudo rm install`
 
 Update Script
 ------------
 To update the SPIDAMin deployment with the newest docker images:
-`sudo curl -o update https://raw.githubusercontent.com/spidasoftware/installer/master/update && sudo chmod +x update && sudo ./update && sudo rm update`
+
+1. `cd` to the same directory the install script was run from.  That directory should contain a file named `docker-compose.yml`.
+2. Run: `sudo curl -o update https://raw.githubusercontent.com/spidasoftware/installer/master/update && sudo chmod +x update && sudo ./update && sudo rm update`
