@@ -17,6 +17,7 @@ A complete installation is completed by running the following command on the ser
 Install Script Options
 ------------------------------
 * -tag              docker spidamin tag to deploy (defaults to latest)
+* -apachetag         docker apache tag to deploy (defaults to latest)
 * -username         dockerhub username (will prompt for username if argument is not passed)
 * -email            dockerhub email (will prompt for email if argument is not passed)
 * -serverroot       server root that you will navigate to view the application (ex: min.com or min.com:8443)  

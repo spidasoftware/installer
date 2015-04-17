@@ -38,9 +38,10 @@ function parseCommandLineArguments() {
           --no-mongodb)  mongo=false;;
           *)
               echo >&2 \
-              "usage: $0 [-tag tag] [-username dockerUsername] [-email dockerEmail] [-serverroot serverRoot] [-filesdir filesdir] [-dbpassword dbpassword] [-mongopassword mongopassword] [-tomcatpassword tomcatpassword] [-mongobackupdir mongobackupdir] [-postgresbackupdir postgresbackupdir] [-mongodatadir mongodatadir] [--no-spidamin] [-userpassword userpassword] [--no-postgresql] [--no-mongodb]
+              "usage: $0 [-tag tag] [-apachetag apachetag] [-username dockerUsername] [-email dockerEmail] [-serverroot serverRoot] [-filesdir filesdir] [-dbpassword dbpassword] [-mongopassword mongopassword] [-tomcatpassword tomcatpassword] [-mongobackupdir mongobackupdir] [-postgresbackupdir postgresbackupdir] [-mongodatadir mongodatadir] [--no-spidamin] [-userpassword userpassword] [--no-postgresql] [--no-mongodb]
                 Options:
                   -tag               docker spidamin tag to deploy (defaults to latest)
+                  -apachetag         docker apache tag to deploy (defaults to latest)
                   -username          dockerhub username (will prompt for username if argument is not passed)
                   -email             dockerhub email (will prompt for email if argument is not passed)
                   -serverroot        server root that you will navigate to view the application (ex: min.com or min.com:8443)  
