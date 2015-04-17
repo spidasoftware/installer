@@ -1,4 +1,4 @@
-# installer
+# SPIDAMIN Installer
 
 Installation Requirements
 ----------
