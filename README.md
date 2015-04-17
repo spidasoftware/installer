@@ -20,7 +20,7 @@ Install Script Options
 * -apachetag         docker apache tag to deploy (defaults to latest)
 * -username         dockerhub username (will prompt for username if argument is not passed)
 * -email            dockerhub email (will prompt for email if argument is not passed)
-* -serverroot       server root that you will navigate to view the application (ex: min.com or min.com:8443)  
+* -serverroot       server root that you will navigate to view the application (ex: min.com)  
 * -filesdir         files directory that spidamin files will be stored in (defaults to /apps/spidamin/files)
 * -dbpassword       database password
 * -mongopassword    mongodb password
@@ -35,7 +35,7 @@ Install Script Options
 
 Example Development Machine Install Command:
 
-`sudo curl -o install https://raw.githubusercontent.com/spidasoftware/installer/master/install && sudo chmod +x install && sudo ./install -serverroot developmentserver.com:8443 -filesdir /apps/files -dbpassword password -mongopassword password -tomcatpassword password -userpassword password && sudo rm install`
+`sudo curl -o install https://raw.githubusercontent.com/spidasoftware/installer/master/install && sudo chmod +x install && sudo ./install -serverroot developmentserver.com -filesdir /apps/files -dbpassword password -mongopassword password -tomcatpassword password -userpassword password && sudo rm install`
 
 Update Script
 ------------
