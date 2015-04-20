@@ -191,25 +191,28 @@ function createDockerComposeFile() {
     needEnvFile=true
   fi
 
-  sudo rm -f docker-compose.yml
-  sudo touch docker-compose.yml
-  sudo chmod 666 docker-compose.yml
+  dockerComposeFile=/var/lib/spida/docker-compose.yml
+  dockerEnvFile=/var/lib/spida/.docker-common.env
+  mkdir -p /var/lib/spida
+  sudo rm -f $dockerComposeFile
+  sudo touch $dockerComposeFile
+  sudo chmod 664 $dockerComposeFile
   if [[ $needEnvFile = true ]]; then
-    sudo rm -f .docker-common.env
-    sudo touch .docker-common.env
-    sudo chmod 666 .docker-common.env
+    sudo rm -f $dockerEnvFile
+    sudo touch $dockerEnvFile
+    sudo chmod 664 $dockerEnvFile
     if [[ "$databasePassword" != "" ]]; then
-      echo "DATABASE_PASSWORD=$databasePassword" >> .docker-common.env
-      echo "POSTGRES_PASSWORD=$databasePassword" >> .docker-common.env
+      echo "DATABASE_PASSWORD=$databasePassword" >> $dockerEnvFile
+      echo "POSTGRES_PASSWORD=$databasePassword" >> $dockerEnvFile
     fi
     if [[ "$mongoPassword" != "" ]]; then
-      echo "MONGODB_PASSWORD=$mongoPassword" >> .docker-common.env
+      echo "MONGODB_PASSWORD=$mongoPassword" >> $dockerEnvFile
     fi
     if [[ "$tomcatAdminPassword" != "" ]]; then
-      echo "TOMCAT_PASSWORD=$tomcatAdminPassword" >> .docker-common.env
+      echo "TOMCAT_PASSWORD=$tomcatAdminPassword" >> $dockerEnvFile
     fi
     if [[ "$defaultUserPassword" != "" ]]; then
-      echo "ADMIN_USER_PASSWORD=$defaultUserPassword" >> .docker-common.env
+      echo "ADMIN_USER_PASSWORD=$defaultUserPassword" >> $dockerEnvFile
     fi
   fi
 
@@ -223,27 +226,27 @@ function createDockerComposeFile() {
   volumes:
     - $filesDir:/var/lib/spida/files
   environment:
-    - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME" >> docker-compose.yml
+    - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME" >> $dockerComposeFile
     
     if [[ "$serverRoot" != "" ]]; then
-      echo "    - SERVER_ROOT=$serverRoot" >> docker-compose.yml
+      echo "    - SERVER_ROOT=$serverRoot" >> $dockerComposeFile
     fi
     
     if [[ $needEnvFile = true ]]; then
-      echo "  env_file: .docker-common.env" >> docker-compose.yml
+      echo "  env_file: $dockerEnvFile" >> $dockerComposeFile
     fi
 
     if [[ "$*" != *"--no-postgresql"* ]] || [[ "$*" != *"--no-mongodb"* ]] || [[ "$*" != *"--no-redis"* ]]; then
-      echo "  links:" >> docker-compose.yml
+      echo "  links:" >> $dockerComposeFile
     fi
     if [[ "$*" != *"--no-postgresql"* ]]; then
-      echo "    - postgresql" >> docker-compose.yml
+      echo "    - postgresql" >> $dockerComposeFile
     fi
     if [[ "$*" != *"--no-mongodb"* ]]; then
-      echo "    - mongodb" >> docker-compose.yml
+      echo "    - mongodb" >> $dockerComposeFile
     fi
     if [[ "$*" != *"--no-redis"* ]]; then
-      echo "    - redis" >> docker-compose.yml
+      echo "    - redis" >> $dockerComposeFile
     fi
   fi
 
@@ -254,9 +257,9 @@ function createDockerComposeFile() {
   ports:
     - \"127.0.0.1:5432:5432\"
   volumes:
-    - $postgresBackupDir:/backups" >> docker-compose.yml
+    - $postgresBackupDir:/backups" >> $dockerComposeFile
       if [[ $needEnvFile = true ]]; then
-        echo "  env_file: .docker-common.env" >> docker-compose.yml
+        echo "  env_file: $dockerEnvFile" >> $dockerComposeFile
       fi
   fi
 
@@ -268,12 +271,12 @@ function createDockerComposeFile() {
     - \"127.0.0.1:27017:27017\"
     - \"127.0.0.1:28017:28017\"
   volumes:
-    - $mongoBackupDir:/backups" >> docker-compose.yml
+    - $mongoBackupDir:/backups" >> $dockerComposeFile
       if [[ "$mongoDataDir" != "" ]]; then
-        echo "      - $mongoDataDir:/data/db" >> docker-compose.yml
+        echo "      - $mongoDataDir:/data/db" >> $dockerComposeFile
       fi
       if [[ $needEnvFile = true ]]; then
-        echo "  env_file: .docker-common.env" >> docker-compose.yml
+        echo "  env_file: $dockerEnvFile" >> $dockerComposeFile
       fi
   fi
 
@@ -282,7 +285,7 @@ function createDockerComposeFile() {
   image: spidasoftware/redis 
   restart: always
   ports:
-    - \"127.0.0.1:6379:6379\"" >> docker-compose.yml
+    - \"127.0.0.1:6379:6379\"" >> $dockerComposeFile
 
     echo "apache:
   image: spidasoftware/apache:$apacheTag
@@ -293,10 +296,10 @@ function createDockerComposeFile() {
     - \"80:80\"
     - \"443:443\"
   environment:
-    - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME" >> docker-compose.yml
+    - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME" >> $dockerComposeFile
     
     if [[ "$serverRoot" != "" ]]; then
-      echo "    - SERVER_ROOT=$serverRoot" >> docker-compose.yml
+      echo "    - SERVER_ROOT=$serverRoot" >> $dockerComposeFile
     fi
   fi
 }
@@ -306,6 +309,6 @@ installDocker
 dockerLogin
 createDockerComposeFile
 # Start docker
-sudo docker-compose up -d
+sudo docker-compose -f $dockerComposeFile up -d
 
 sudo docker logout
