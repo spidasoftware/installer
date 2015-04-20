@@ -41,5 +41,4 @@ Update Script
 ------------
 To update the SPIDAMin deployment with the newest docker images:
 
-1. `cd` to the same directory the install script was run from.  That directory should contain a file named `docker-compose.yml`.
-2. Run: `sudo curl -o update https://raw.githubusercontent.com/spidasoftware/installer/master/update && sudo chmod +x update && sudo ./update && sudo rm update`
+`sudo curl -o update https://raw.githubusercontent.com/spidasoftware/installer/master/update && sudo chmod +x update && sudo ./update && sudo rm update`
