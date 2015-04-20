@@ -71,7 +71,14 @@ function parseCommandLineArguments() {
 
 function installDocker() {
   OS=`cat /etc/issue`
+
+  # cat /etc/issue wasn't working for RHEL 7+ on google compute. So if /etc/redhat-release exists then use that.
+  if [[ -f "/etc/redhat-release" ]]; then
+    OS=`cat /etc/issue`
+  fi
+  
   VERSION=$(egrep -o "[0-9]{1,}\.[0-9]{1,}" <<< "$OS")
+
 
   ### First get Docker
   ### ---------------------------------------
