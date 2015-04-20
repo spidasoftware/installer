@@ -44,7 +44,7 @@ function parseCommandLineArguments() {
                   -apachetag         docker apache tag to deploy (defaults to latest)
                   -username          dockerhub username (will prompt for username if argument is not passed)
                   -email             dockerhub email (will prompt for email if argument is not passed)
-                  -serverroot        server root that you will navigate to view the application (ex: min.com or min.com:8443)  
+                  -serverroot        server root that you will navigate to view the application (ex: min.com)  
                   -filesdir          files directory that spidamin files will be stored in (defaults to /apps/spidamin/files)
                   -mongobackupdir    directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/mongodb)
                   -postgresbackupdir directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/postgres)
