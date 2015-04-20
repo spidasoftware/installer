@@ -74,7 +74,7 @@ function installDocker() {
 
   # cat /etc/issue wasn't working for RHEL 7+ on google compute. So if /etc/redhat-release exists then use that.
   if [[ -f "/etc/redhat-release" ]]; then
-    OS=`cat /etc/issue`
+    OS=`cat /etc/redhat-release`
   fi
   
   VERSION=$(egrep -o "[0-9]{1,}\.[0-9]{1,}" <<< "$OS")
