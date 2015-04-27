@@ -34,9 +34,9 @@ Argument           | Description
 -mongobackupdir    | directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/mongodb)
 -postgresbackupdir | directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/postgres)
 -mongodatadir      | mongodb data directory (defaults to not mounted)
---no-spidamin      | don't install spidamin
---no-postgresql    | don't install postgresql
---no-mongodb       | don't install mongodb
+--no-spidamin      | don't install spidamin (if databases and min are on differnt machines)
+--no-postgresql    | don't install postgresql (if databases and min are on differnt machines)
+--no-mongodb       | don't install mongodb (if databases and min are on differnt machines)
 
 
 Updating SPIDAmin
