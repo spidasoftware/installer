@@ -19,24 +19,25 @@ sudo ./install -serverroot developmentserver.com -filesdir /apps/files -dbpasswo
 sudo rm install
 ```
 
-Argument           | Description
--------------------|--------------------------------------------------------------------------------------------
--tag               | docker spidamin tag to deploy (defaults to latest)
--apachetag         | docker apache tag to deploy (defaults to latest)
--username          | dockerhub username (will prompt for username if argument is not passed)
--email             | dockerhub email (will prompt for email if argument is not passed)
--serverroot        | server root that you will navigate to view the application (ex: min.com)  
--filesdir          | files directory that spidamin files will be stored in (defaults to /apps/spidamin/files)
--dbpassword        | database password
--mongopassword     | mongodb password
--tomcatpassword    | tomcat admin password
--userpassword      | default spidamin user password
--mongobackupdir    | directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/mongodb)
--postgresbackupdir | directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/postgres)
--mongodatadir      | mongodb data directory (defaults to not mounted)
---no-spidamin      | don't install spidamin (if databases and SPIDAMin are on different machines)
---no-postgresql    | don't install postgresql (if databases and SPIDAMin are on different machines)
---no-mongodb       | don't install mongodb (if databases and SPIDAMin are on different machines)
+Argument            | Description
+--------------------|--------------------------------------------------------------------------------------------
+--tag               | docker spidamin tag to deploy (defaults to latest)
+--apachetag         | docker apache tag to deploy (defaults to latest)
+--username          | dockerhub username (will prompt for username if argument is not passed)
+--email             | dockerhub email (will prompt for email if argument is not passed)
+--password          | dockerhub password (will prompt for email if argument is not passed)
+--serverroot        | server root that you will navigate to view the application (ex: min.com)  
+--filesdir          | files directory that spidamin files will be stored in (defaults to /apps/spidamin/files)
+--dbpassword        | database password
+--mongopassword     | mongodb password
+--tomcatpassword    | tomcat admin password
+--userpassword      | default spidamin user password
+--mongobackupdir    | directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/mongodb)
+--postgresbackupdir | directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/postgres)
+--mongodatadir      | mongodb data directory (defaults to not mounted)
+--no-spidamin       | don't install spidamin (if databases and SPIDAMin are on different machines)
+--no-postgresql     | don't install postgresql (if databases and SPIDAMin are on different machines)
+--no-mongodb        | don't install mongodb (if databases and SPIDAMin are on different machines)
 
 
 Updating SPIDAmin

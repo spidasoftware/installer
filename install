@@ -1,9 +1,15 @@
 #!/bin/bash
 
+####################################################################################
+#
+# Vars
+# 
+####################################################################################
 serverRoot=`hostname -f`
 tag="latest"
-username=""
-email=""
+dockerUsername=""
+dockerEmail=""
+dockerPassword=""
 databasePassword=""
 mongoPassword=""
 tomcatAdminPassword=""
@@ -16,46 +22,54 @@ mongoBackupDir="/apps/spidamin/backups/mongodb"
 postgresBackupDir="/apps/spidamin/backups/postgres"
 apacheTag="latest"
 
+
+####################################################################################
+#
+# Parses Args
+# 
+####################################################################################
 function parseCommandLineArguments() {
   while [ $# -gt 0 ]
   do
       case "$1" in
-          -tag) tag="$2"; shift;;
-          -apachetag)  apacheTag="$2"; shift;;
-          -serverroot)  serverRoot="$2"; shift;;
-          -username)  username="$2"; shift;;
-          -email)  email="$2"; shift;;
-          -filesdir)  filesDir="$2"; shift;;
-          -dbpassword)  databasePassword="$2"; shift;;
-          -mongopassword)  mongoPassword="$2"; shift;;
-          -tomcatpassword)  tomcatAdminPassword="$2"; shift;;
-          -userpassword)  defaultUserPassword="$2"; shift;;
-          -mongobackupdir)  mongoBackupDir="$2"; shift;;
-          -postgresbackupdir)  postgresBackupDir="$2"; shift;;
-          -mongodatadir)  mongoDataDir="$2"; shift;;
+          --tag) tag="$2"; shift;;
+          --apachetag)  apacheTag="$2"; shift;;
+          --serverroot)  serverRoot="$2"; shift;;
+          --username)  dockerUsername="$2"; shift;;
+          --email)  dockerEmail="$2"; shift;;
+          --password)  dockerPassword="$2"; shift;;
+          --filesdir)  filesDir="$2"; shift;;
+          --dbpassword)  databasePassword="$2"; shift;;
+          --mongopassword)  mongoPassword="$2"; shift;;
+          --tomcatpassword)  tomcatAdminPassword="$2"; shift;;
+          --userpassword)  defaultUserPassword="$2"; shift;;
+          --mongobackupdir)  mongoBackupDir="$2"; shift;;
+          --postgresbackupdir)  postgresBackupDir="$2"; shift;;
+          --mongodatadir)  mongoDataDir="$2"; shift;;
           --no-spidamin)  spidaMin=false;;
           --no-postgresql)  postrgresql=false;;
           --no-mongodb)  mongo=false;;
           *)
               echo >&2 \
-              "usage: $0 [-tag tag] [-apachetag apachetag] [-username dockerUsername] [-email dockerEmail] [-serverroot serverRoot] [-filesdir filesdir] [-dbpassword dbpassword] [-mongopassword mongopassword] [-tomcatpassword tomcatpassword] [-mongobackupdir mongobackupdir] [-postgresbackupdir postgresbackupdir] [-mongodatadir mongodatadir] [--no-spidamin] [-userpassword userpassword] [--no-postgresql] [--no-mongodb]
+              "usage: $0 [--tag tag] [--apachetag apachetag] [--username dockerHubUsername] [--email dockerHubEmail] [--password dockerHubPassword] [--serverroot serverRoot] [--filesdir filesdir] [--dbpassword dbpassword] [--mongopassword mongopassword] [--tomcatpassword tomcatpassword] [--mongobackupdir mongobackupdir] [--postgresbackupdir postgresbackupdir] [--mongodatadir mongodatadir] [--no-spidamin] [--userpassword userpassword] [--no-postgresql] [--no-mongodb]
                 Options:
-                  -tag               docker spidamin tag to deploy (defaults to latest)
-                  -apachetag         docker apache tag to deploy (defaults to latest)
-                  -username          dockerhub username (will prompt for username if argument is not passed)
-                  -email             dockerhub email (will prompt for email if argument is not passed)
-                  -serverroot        server root that you will navigate to view the application (ex: min.com)  
-                  -filesdir          files directory that spidamin files will be stored in (defaults to /apps/spidamin/files)
-                  -mongobackupdir    directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/mongodb)
-                  -postgresbackupdir directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/postgres)
-                  -mongodatadir      mongodb data directory (defaults to not mounted)
-                  -dbpassword        database password
-                  -mongopassword     mongodb password
-                  -tomcatpassword    tomcat admin password
-                  -userpassword      default spidamin user password
-                  --no-spidamin      don't install spidamin
-                  --no-postgresql    don't install postgresql
-                  --no-mongodb       don't install mongodb 
+                  --tag               docker spidamin tag to deploy (defaults to latest)
+                  --apachetag         docker apache tag to deploy (defaults to latest)
+                  --username          dockerhub username (will prompt for username if argument is not passed)
+                  --email             dockerhub email (will prompt for email if argument is not passed)
+                  --password          dockerhub password (will prompt for email if argument is not passed)
+                  --serverroot        server root that you will navigate to view the application (ex: min.com)  
+                  --filesdir          files directory that spidamin files will be stored in (defaults to /apps/spidamin/files)
+                  --mongobackupdir    directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/mongodb)
+                  --postgresbackupdir directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/postgres)
+                  --mongodatadir      mongodb data directory (defaults to not mounted)
+                  --dbpassword        database password
+                  --mongopassword     mongodb password
+                  --tomcatpassword    tomcat admin password
+                  --userpassword      default spidamin user password
+                  --no-spidamin       don't install spidamin
+                  --no-postgresql     don't install postgresql
+                  --no-mongodb        don't install mongodb 
               "
               exit 1;;
           *)  break;; # terminate while loop
@@ -69,6 +83,12 @@ function parseCommandLineArguments() {
   fi
 }
 
+
+####################################################################################
+#
+# Installs Docker
+# 
+####################################################################################
 function installDocker() {
   OS=`cat /etc/issue`
 
@@ -79,11 +99,6 @@ function installDocker() {
   
   VERSION=$(egrep -o "[0-9]{1,}\.[0-9]{1,}" <<< "$OS")
 
-
-  ### First get Docker
-  ### ---------------------------------------
-
-  #### Ubuntu Section
   if [[ $OS == *"Ubuntu"* ]]; then
     echo "Ubuntu $VERSION"
     if(( $(bc <<< "$VERSION < 14.0") == 1 )); then
@@ -113,8 +128,6 @@ function installDocker() {
         sudo docker --version
       fi
     fi
-
-  #### RHEL Section
   elif [[ $OS == *"Red Hat Enterprise Linux Server"* ]]; then
     echo "RHEL $VERSION"
     sudo yum -y update
@@ -146,21 +159,6 @@ function installDocker() {
     #Start the service
     sudo service docker start
     sudo chkconfig docker on
-
-  #### SUSE Section - Check this on a SUSE system
-  # elif [[ $OS == *"SUSE"* ]]; then
-    # if(( $(bc <<< "$VERSION == 12.3") == 1 )); then
-    #   sudo zypper ar -f http://download.opensuse.org/repositories/Virtualization/openSUSE_12.3/ Virtualization
-    # elif(( $(bc <<< "$VERSION == 13.1") == 1 )); then
-    #   sudo zypper ar -f http://download.opensuse.org/repositories/Virtualization/openSUSE_13.1/ Virtualization
-    # elif(( $(bc <<< "$VERSION < 13") == 1 )); then
-    #   echo "$VERSION is not a supported SUSE Version, need 12.3 or 13.1"
-    #   exit 1
-    # fi
-    # sudo zypper in docker
-    # sudo systemctl start docker
-    # sudo systemctl enable docker
-
   else
     echo "$OS is not a supported OS"
     exit 1
@@ -177,16 +175,26 @@ function installDocker() {
   fi
 }
 
-function dockerLogin() {
-  if [[ "$username" = "" ]]; then
-    read -p "Docker username: " username
-  fi
-  if [[ "$email" = "" ]]; then
-    read -p "Docker email: " email
-  fi
-  read  -s -p "Docker password: " dockerPassword
 
-  sudo docker login -u $username -e $email -p $dockerPassword
+####################################################################################
+#
+# Logs in to Docker
+# 
+####################################################################################
+function dockerLogin() {
+  if [[ "$dockerUsername" = "" ]]; then
+    read -p "Docker username: " dockerUsername
+  fi
+
+  if [[ "$dockerEmail" = "" ]]; then
+    read -p "Docker email: " dockerEmail
+  fi
+
+  if [[ "$dockerPassword" = "" ]]; then
+  	read  -s -p "Docker password: " dockerPassword
+  fi
+
+  sudo docker login -u $dockerUsername -e $dockerEmail -p $dockerPassword
 
   if [ $? -ne 0 ]; then
     echo "login failed, exiting."
@@ -194,6 +202,12 @@ function dockerLogin() {
   fi
 }
 
+
+####################################################################################
+#
+# Generates docker-compose.yml
+# 
+####################################################################################
 function createDockerComposeFile() {
   echo "Creating the docker-compose.yml file"
   needEnvFile=false
@@ -314,11 +328,15 @@ function createDockerComposeFile() {
   fi
 }
 
+
+####################################################################################
+#
+# Execute above functions
+# 
+####################################################################################
 parseCommandLineArguments $@
 installDocker
 dockerLogin
 createDockerComposeFile
-# Start docker
 sudo docker-compose -f $dockerComposeFile up -d
-
 sudo docker logout
