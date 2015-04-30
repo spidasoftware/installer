@@ -1,12 +1,64 @@
 #!/bin/bash
 
+####################################################################################
+# Vars
+####################################################################################
+dockerUsername=""
+dockerEmail=""
+dockerPassword=""
 dockerComposeFile=/var/lib/spida/docker-compose.yml
 
-read -p "Docker username: " username
-read -p "Docker email: " email
-read  -s -p "Docker password: " dockerPassword
+####################################################################################
+# Parses Args
+####################################################################################
+function parseCommandLineArguments() {
+  while [ $# -gt 0 ]
+  do
+      case "$1" in
+          --username)  dockerUsername="$2"; shift;;
+          --email)  dockerEmail="$2"; shift;;
+          --password)  dockerPassword="$2"; shift;;
+          *)
+              echo >&2 \
+              "usage: $0 [--username dockerHubUsername] [--email dockerHubEmail] [--password dockerHubPassword]
+                Options:
+                  --username          dockerhub username (will prompt for username if argument is not passed)
+                  --email             dockerhub email (will prompt for email if argument is not passed)
+                  --password          dockerhub password (will prompt for email if argument is not passed)
+              "
+              exit 1;;
+          *)  break;; # terminate while loop
+      esac
+      shift
+  done
+}
 
-sudo docker login -u $username -e $email -p $dockerPassword
+####################################################################################
+# Logs in to Docker
+####################################################################################
+function dockerLogin() {
+  if [[ "$dockerUsername" = "" ]]; then
+    read -p "Docker username: " dockerUsername
+  fi
+
+  if [[ "$dockerEmail" = "" ]]; then
+    read -p "Docker email: " dockerEmail
+  fi
+
+  if [[ "$dockerPassword" = "" ]]; then
+  	read  -s -p "Docker password: " dockerPassword
+  fi
+
+  sudo docker login -u $dockerUsername -e $dockerEmail -p $dockerPassword
+
+  if [ $? -ne 0 ]; then
+    echo "login failed, exiting."
+    exit 1
+  fi
+}
+
+parseCommandLineArguments
+dockerLogin
 
 sudo docker-compose -f $dockerComposeFile stop
 sudo docker-compose -f $dockerComposeFile rm --force
