@@ -50,3 +50,9 @@ sudo chmod +x update
 sudo ./update 
 sudo rm update
 ```
+
+Argument            | Description
+--------------------|--------------------------------------------------------------------------------------------
+--username          | dockerhub username (will prompt for username if argument is not passed)
+--email             | dockerhub email (will prompt for email if argument is not passed)
+--password          | dockerhub password (will prompt for email if argument is not passed)
