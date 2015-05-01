@@ -57,7 +57,7 @@ function dockerLogin() {
   fi
 }
 
-parseCommandLineArguments
+parseCommandLineArguments $@
 dockerLogin
 
 echo "stopping docker containers..."
