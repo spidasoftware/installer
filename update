@@ -60,9 +60,13 @@ function dockerLogin() {
 parseCommandLineArguments
 dockerLogin
 
+echo "stopping docker containers..."
 sudo docker-compose -f $dockerComposeFile stop
+echo "removing old docker containers..."
 sudo docker-compose -f $dockerComposeFile rm --force
+echo "updating docker containers..."
 sudo docker-compose -f $dockerComposeFile pull
+echo "starting new docker containers..."
 sudo docker-compose -f $dockerComposeFile up -d
 
 sudo docker logout
