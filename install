@@ -73,6 +73,11 @@ function parseCommandLineArguments() {
     echo "$backupDir does not exist, exiting"
     exit 1
   fi
+
+  echo "--------------------------------------------------------------------------------------"
+  echo "Data and files will be stored in ${backupDir}. You must take backups of this location."
+  echo "--------------------------------------------------------------------------------------"
+  sleep 5
 }
 
 
@@ -275,8 +280,6 @@ function createDockerComposeFile() {
     echo "postgresql: 
   image: spidasoftware/postgresql 
   restart: always
-  ports:
-    - \"127.0.0.1:5432:5432\"
   volumes:
     - $postgresBackupDir:/backups
     - $postgresDataDir:/var/lib/postgresql/data" >> $dockerComposeFile
@@ -289,9 +292,6 @@ function createDockerComposeFile() {
     echo "mongodb: 
   image: spidasoftware/mongodb 
   restart: always
-  ports:
-    - \"127.0.0.1:27017:27017\"
-    - \"127.0.0.1:28017:28017\"
   volumes:
     - $mongoBackupDir:/backups
     - $mongoDataDir:/data/db" >> $dockerComposeFile
@@ -303,9 +303,7 @@ function createDockerComposeFile() {
   if [[ $spidaMin = true ]]; then
     echo "redis: 
   image: spidasoftware/redis 
-  restart: always
-  ports:
-    - \"127.0.0.1:6379:6379\"" >> $dockerComposeFile
+  restart: always" >> $dockerComposeFile
 
     echo "apache:
   image: spidasoftware/apache:$apacheTag
