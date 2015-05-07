@@ -245,8 +245,6 @@ function createDockerComposeFile() {
     echo "spidamin: 
   image: spidasoftware/min:$tag 
   restart: always
-  ports: 
-    - \"127.0.0.1:8000:8000\" 
   volumes:
     - $filesDir:/var/lib/spida/files
   environment:
