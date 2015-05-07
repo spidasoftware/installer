@@ -17,9 +17,7 @@ defaultUserPassword=""
 spidaMin=true
 postrgresql=true
 mongo=true
-filesDir="/apps/spidamin/files"
-mongoBackupDir="/apps/spidamin/backups/mongodb"
-postgresBackupDir="/apps/spidamin/backups/postgres"
+backupDir="/apps/spidamin"
 apacheTag="latest"
 
 
@@ -38,14 +36,11 @@ function parseCommandLineArguments() {
           --username)  dockerUsername="$2"; shift;;
           --email)  dockerEmail="$2"; shift;;
           --password)  dockerPassword="$2"; shift;;
-          --filesdir)  filesDir="$2"; shift;;
+          --backupdir)  backupDir="$2"; shift;;
           --dbpassword)  databasePassword="$2"; shift;;
           --mongopassword)  mongoPassword="$2"; shift;;
           --tomcatpassword)  tomcatAdminPassword="$2"; shift;;
           --userpassword)  defaultUserPassword="$2"; shift;;
-          --mongobackupdir)  mongoBackupDir="$2"; shift;;
-          --postgresbackupdir)  postgresBackupDir="$2"; shift;;
-          --mongodatadir)  mongoDataDir="$2"; shift;;
           --no-spidamin)  spidaMin=false;;
           --no-postgresql)  postrgresql=false;;
           --no-mongodb)  mongo=false;;
@@ -59,10 +54,7 @@ function parseCommandLineArguments() {
                   --email             dockerhub email (will prompt for email if argument is not passed)
                   --password          dockerhub password (will prompt for email if argument is not passed)
                   --serverroot        server root that you will navigate to view the application (ex: min.com)  
-                  --filesdir          files directory that spidamin files will be stored in (defaults to /apps/spidamin/files)
-                  --mongobackupdir    directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/mongodb)
-                  --postgresbackupdir directory that mongodb backups will be stored (defaults to /apps/spidamin/backups/postgres)
-                  --mongodatadir      mongodb data directory (defaults to not mounted)
+                  --backupdir         directory for mongo data, postgres data, files and backups (defaults to /apps/spidamin). This has to be backed up.
                   --dbpassword        database password
                   --mongopassword     mongodb password
                   --tomcatpassword    tomcat admin password
@@ -77,8 +69,8 @@ function parseCommandLineArguments() {
       shift
   done
 
-  if [[ ! -d "$filesDir" ]] || [[ ! -d "$mongoBackupDir" ]] || [[ ! -d "$postgresBackupDir" ]] || [[ "$mongoDataDir" != "" && ! -d "$mongoDataDir" ]]; then
-    echo "$filesDir, $mongoBackupDir, $postgresBackupDir or $mongoDataDir does not exist, exiting"
+  if [[ ! -d "$backupDir" ]]; then
+    echo "$backupDir does not exist, exiting"
     exit 1
   fi
 }
@@ -220,11 +212,10 @@ function createDockerComposeFile() {
   mkdir -p /var/lib/spida
   sudo rm -f $dockerComposeFile
   sudo touch $dockerComposeFile
-  sudo chmod 664 $dockerComposeFile
+
   if [[ $needEnvFile = true ]]; then
     sudo rm -f $dockerEnvFile
     sudo touch $dockerEnvFile
-    sudo chmod 664 $dockerEnvFile
     if [[ "$databasePassword" != "" ]]; then
       echo "DATABASE_PASSWORD=$databasePassword" >> $dockerEnvFile
       echo "POSTGRES_PASSWORD=$databasePassword" >> $dockerEnvFile
@@ -239,6 +230,14 @@ function createDockerComposeFile() {
       echo "ADMIN_USER_PASSWORD=$defaultUserPassword" >> $dockerEnvFile
     fi
   fi
+
+  # setup mongo data dir, postgres data dir files dir and backsup dir
+  filesDir="${backupDir}/files"
+  postgresBackupDir="${backupDir}/postgresBackups"
+  mongoBackupDir="${backupDir}/mongoBackups"
+  mongoDataDir="${backupDir}/mongoData"
+  postgresDataDir="${backupDir}/postgresData"
+  mkdir -p $filesDir $postgresBackupDir $mongoBackupDir $mongoDataDir $postgresDataDir
 
   HOST_MACHINE_HOST_NAME=`hostname -f`
   if [[ $spidaMin = true ]]; then
@@ -279,7 +278,8 @@ function createDockerComposeFile() {
   ports:
     - \"127.0.0.1:5432:5432\"
   volumes:
-    - $postgresBackupDir:/backups" >> $dockerComposeFile
+    - $postgresBackupDir:/backups
+    - $postgresDataDir:/var/lib/postgresql/data" >> $dockerComposeFile
       if [[ $needEnvFile = true ]]; then
         echo "  env_file: $dockerEnvFile" >> $dockerComposeFile
       fi
@@ -293,10 +293,8 @@ function createDockerComposeFile() {
     - \"127.0.0.1:27017:27017\"
     - \"127.0.0.1:28017:28017\"
   volumes:
-    - $mongoBackupDir:/backups" >> $dockerComposeFile
-      if [[ "$mongoDataDir" != "" ]]; then
-        echo "      - $mongoDataDir:/data/db" >> $dockerComposeFile
-      fi
+    - $mongoBackupDir:/backups
+    - $mongoDataDir:/data/db" >> $dockerComposeFile
       if [[ $needEnvFile = true ]]; then
         echo "  env_file: $dockerEnvFile" >> $dockerComposeFile
       fi
