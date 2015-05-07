@@ -242,8 +242,9 @@ function createDockerComposeFile() {
   mongoBackupDir="${backupDir}/mongoBackups"
   mongoDataDir="${backupDir}/mongoData"
   postgresDataDir="${backupDir}/postgresData"
-  spidassl="${backupDir}/spidassl"
-  mkdir -p $filesDir $postgresBackupDir $mongoBackupDir $mongoDataDir $postgresDataDir $spidassl
+  tomcatssl="${backupDir}/tomcatssl"
+  apachessl="${backupDir}/apachessl"
+  mkdir -p $filesDir $postgresBackupDir $mongoBackupDir $mongoDataDir $postgresDataDir $tomcatssl $apachessl
 
   HOST_MACHINE_HOST_NAME=`hostname -f`
   if [[ $spidaMin = true ]]; then
@@ -252,7 +253,7 @@ function createDockerComposeFile() {
   restart: always
   volumes:
     - $filesDir:/var/lib/spida/files
-    - $spidassl:/usr/local/tomcat/spidassl
+    - $tomcatssl:/usr/local/tomcat/spidassl
   environment:
     - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME" >> $dockerComposeFile
     
@@ -315,6 +316,8 @@ function createDockerComposeFile() {
   ports:
     - \"80:80\"
     - \"443:443\"
+  volumes:
+    - $apachessl:/var/lib/spida/apache_ssl
   environment:
     - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME" >> $dockerComposeFile
     
