@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# This script takes snapshots of the backup directory on out google cloud instances
+
+# To setup as a cron job:
+# 0 9 * * * /var/lib/spida/snapshot.sh $disk-id
+
+DT=`date +%Y%m%d`
+DT2=`date -d'-1 week' +%Y%m%d`
+name="$1"
+zone="$2"
+if [[ "$zone" = "" ]]; then
+	zone="us-central1-a"
+fi
+
+sudo sync
+sudo fsfreeze -f /apps/spidamin
+gcloud compute disks snapshot $name --snapshot-name $name-v$DT --zone $zone
+sudo fsfreeze -u /apps/spidamin
+gcloud compute snapshots delete $name-v$DT2 -q
