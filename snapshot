@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script takes snapshots of the backup directory on out google cloud instances
+# This script takes snapshots of the files/data directory on google cloud instances
 
 # To setup as a cron job:
 # 0 9 * * * /var/lib/spida/snapshot.sh $disk-id
