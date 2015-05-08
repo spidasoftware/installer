@@ -77,7 +77,6 @@ function parseCommandLineArguments() {
   echo "--------------------------------------------------------------------------------------"
   echo "Data and files will be stored in ${backupDir}. You must take backups of this location."
   echo "--------------------------------------------------------------------------------------"
-  sleep 5
 }
 
 
