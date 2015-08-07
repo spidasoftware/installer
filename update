@@ -50,11 +50,13 @@ function dockerLogin() {
   fi
 
   sudo docker login -u $dockerUsername -e $dockerEmail -p $dockerPassword
-
+ 
   if [ $? -ne 0 ]; then
     echo "login failed, exiting."
     exit 1
   fi
+
+  sudo cp ~/.docker/config.json ~/.dockercfg
 }
 
 parseCommandLineArguments $@
@@ -69,4 +71,5 @@ sudo docker-compose -f $dockerComposeFile pull
 echo "starting new docker containers..."
 sudo docker-compose -f $dockerComposeFile up -d
 
+sudo rm ~/.dockercfg
 sudo docker logout
