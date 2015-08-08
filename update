@@ -84,7 +84,7 @@ if [[ "$apache_image" != "" ]]; then
   sudo docker pull $apache_image
 fi
 
-if [[ "$min_image" != "" ]]; then
+if [[ "$spidamin_image" != "" ]]; then
   sudo docker pull $apache_image
 fi
   
