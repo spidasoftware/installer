@@ -85,7 +85,7 @@ if [[ "$apache_image" != "" ]]; then
 fi
 
 if [[ "$spidamin_image" != "" ]]; then
-  sudo docker pull $apache_image
+  sudo docker pull $spidamin_image
 fi
   
 echo "stopping docker containers..."
