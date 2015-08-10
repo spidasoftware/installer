@@ -104,11 +104,6 @@ function installDocker() {
       sudo docker --version
       if [ $? -ne 0 ]; then
         echo "docker not installed...installing"
-        # Check that HTTPS transport is available to APT
-        if [ ! -e /usr/lib/apt/methods/https ]; then
-          sudo apt-get update
-          sudo apt-get install -y apt-transport-https wget
-        fi
 
         # Install docker
         wget -qO- https://get.docker.com/ | sudo sh
