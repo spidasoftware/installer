@@ -59,35 +59,9 @@ function dockerLogin() {
   
 }
 
-function parseYaml() {
-   local prefix=$2
-   local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
-   sed -ne "s|^\($s\):|\1|" \
-        -e "s|^\($s\)\($w\)$s:$s[\"']\(.*\)[\"']$s\$|\1$fs\2$fs\3|p" \
-        -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p"  $1 |
-   awk -F$fs '{
-      indent = length($1)/2;
-      vname[indent] = $2;
-      for (i in vname) {if (i > indent) {delete vname[i]}}
-      if (length($3) > 0) {
-         vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
-         printf("%s%s%s=\"%s\"\n", "'$prefix'",vn, $2, $3);
-      }
-   }'
-}
-
 parseCommandLineArguments $@
 dockerLogin
 
-eval $(parseYaml $dockerComposeFile)
-if [[ "$apache_image" != "" ]]; then
-  sudo docker pull $apache_image
-fi
-
-if [[ "$spidamin_image" != "" ]]; then
-  sudo docker pull $spidamin_image
-fi
-  
 echo "stopping docker containers..."
 sudo docker-compose -f $dockerComposeFile stop
 echo "removing old docker containers..."
