@@ -86,77 +86,9 @@ function parseCommandLineArguments() {
 # 
 ####################################################################################
 function installDocker() {
-  OS=`cat /etc/issue`
-
-  # cat /etc/issue wasn't working for RHEL 7+ on google compute. So if /etc/redhat-release exists then use that.
-  if [[ -f "/etc/redhat-release" ]]; then
-    OS=`cat /etc/redhat-release`
-  fi
-  
-  VERSION=$(egrep -o "[0-9]{1,}\.[0-9]{1,}" <<< "$OS")
-
-  if [[ $OS == *"Ubuntu"* ]]; then
-    echo "Ubuntu $VERSION"
-    if(( $(bc <<< "$VERSION < 14.0") == 1 )); then
-      echo "$VERSION is not a supported Ubuntu Version, need > 14.04"
-      exit 1
-    else
-      sudo docker --version
-      if [ $? -ne 0 ]; then
-        echo "docker not installed...installing"
-
-        # Install docker
-        wget -qO- https://get.docker.com/ | sudo sh
-        sudo source /etc/bash_completion.d/docker.io 
-
-        sudo docker --version
-      fi
-    fi
-  elif [[ $OS == *"Red Hat Enterprise Linux Server"* ]]; then
-    echo "RHEL $VERSION"
-    sudo yum -y update
-
-    if(( $(bc <<< "$VERSION < 6.5") == 1 )); then
-      echo "$VERSION is not a supported RHEL Version, need > 6.5"
-      exit 1
-    fi
-
-    sudo docker --version
-    if [ $? -ne 0 ]; then
-      echo "docker not installed...installing"
-      if(( $(bc <<< "$VERSION > 6.99") == 1 )); then
-        # 7.0 plus
-        sudo subscription-manager repos --enable=rhel-7-server-extras-rpms
-        sudo yum -y install docker
-      else
-        # 6.5 but less than 7 
-        wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
-        sudo rpm -Uvh epel-release-6*.rpm
-        sudo rm -f epel-release-6*.rpm
-        sudo yum -y remove docker
-        sudo yum -y install docker-io
-        sudo yum -y update docker-io
-      fi
-      sudo docker --version
-    fi
-
-    #Start the service
-    sudo service docker start
-    sudo chkconfig docker on
-  else
-    echo "$OS is not a supported OS"
-    exit 1
-  fi
-
-  sudo docker-compose --version
-  if [ $? -ne 0 ]; then
-    echo "docker-compose not installed...installing"
-    sudo curl -L https://github.com/docker/compose/releases/download/1.1.0/docker-compose-`uname -s`-`uname -m` > docker-compose
-    sudo mv docker-compose /usr/bin/docker-compose
-    sudo chmod +x /usr/bin/docker-compose
-
-    docker-compose --version
-  fi
+  sudo apt-get update
+  sudo apt-get install wget
+  wget -qO- https://get.docker.com/ | sh
 }
 
 
@@ -314,24 +246,6 @@ function createDockerComposeFile() {
   fi
 }
 
-# Work aroud for current but in dockercompose
-function parseYaml() {
-   local prefix=$2
-   local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
-   sed -ne "s|^\($s\):|\1|" \
-        -e "s|^\($s\)\($w\)$s:$s[\"']\(.*\)[\"']$s\$|\1$fs\2$fs\3|p" \
-        -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p"  $1 |
-   awk -F$fs '{
-      indent = length($1)/2;
-      vname[indent] = $2;
-      for (i in vname) {if (i > indent) {delete vname[i]}}
-      if (length($3) > 0) {
-         vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
-         printf("%s%s%s=\"%s\"\n", "'$prefix'",vn, $2, $3);
-      }
-   }'
-}
-
 ####################################################################################
 #
 # Execute above functions
@@ -341,16 +255,6 @@ parseCommandLineArguments $@
 installDocker
 dockerLogin
 createDockerComposeFile
-
-#Work around for docker compose pull from private repo with docker 1.7
-eval $(parseYaml $dockerComposeFile)
-if [[ "$apache_image" != "" ]]; then
-  sudo docker pull $apache_image
-fi
-
-if [[ "$spidamin_image" != "" ]]; then
-  sudo docker pull $spidamin_image
-fi
 
 sudo docker-compose -f $dockerComposeFile up -d
 sudo docker logout
