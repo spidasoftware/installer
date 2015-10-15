@@ -15,7 +15,8 @@ Example install:
 ```
 sudo curl https://raw.githubusercontent.com/spidasoftware/installer/master/install -o install 
 sudo chmod +x install 
-sudo ./install --serverroot developmentserver.com --filesdir /apps/files --dbpassword password --mongopassword password --tomcatpassword password --userpassword password
+sudo ./install --serverroot developmentserver.com --backupdir /apps/spidamin \\
+  --dbpassword password --mongopassword password --tomcatpassword password --userpassword password
 sudo rm install
 ```
 
