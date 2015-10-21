@@ -176,7 +176,7 @@ function createDockerComposeFile() {
   volumes:
     - $filesDir:/var/lib/spida/files
     - $tomcatssl:/usr/local/tomcat/spidassl
-    - $geoserver:/var/lib/geoserver
+    - $geoserver:/var/lib/spida/geoserver
   environment:
     - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME" >> $dockerComposeFile
     
