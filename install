@@ -14,6 +14,7 @@ databasePassword=""
 mongoPassword=""
 tomcatAdminPassword=""
 defaultUserPassword=""
+defaulUserApiToken=""
 spidaMin=true
 postrgresql=true
 mongo=true
@@ -41,6 +42,7 @@ function parseCommandLineArguments() {
           --mongopassword)  mongoPassword="$2"; shift;;
           --tomcatpassword)  tomcatAdminPassword="$2"; shift;;
           --userpassword)  defaultUserPassword="$2"; shift;;
+          --apitoken)  defaulUserApiToken="$2"; shift;;
           --no-spidamin)  spidaMin=false;;
           --no-postgresql)  postrgresql=false;;
           --no-mongodb)  mongo=false;;
@@ -127,7 +129,7 @@ function dockerLogin() {
 function createDockerComposeFile() {
   echo "Creating the docker-compose.yml file"
   needEnvFile=false
-  if [[ "$databasePassword" != "" || "$mongoPassword" != "" || "$tomcatAdminPassword" != "" || "$defaultUserPassword" != "" ]]; then
+  if [[ "$databasePassword" != "" || "$mongoPassword" != "" || "$tomcatAdminPassword" != "" || "$defaultUserPassword" != "" || "$defaulUserApiToken" != "" ]]; then
     needEnvFile=true
   fi
 
@@ -152,6 +154,9 @@ function createDockerComposeFile() {
     fi
     if [[ "$defaultUserPassword" != "" ]]; then
       echo "ADMIN_USER_PASSWORD=$defaultUserPassword" >> $dockerEnvFile
+    fi
+    if [[ "$defaulUserApiToken" != "" ]]; then
+      echo "ADMIN_API_TOKEN=$defaulUserApiToken" >> $dockerEnvFile
     fi
   fi
 
