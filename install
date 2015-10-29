@@ -191,17 +191,13 @@ function createDockerComposeFile() {
       echo "  env_file: $dockerEnvFile" >> $dockerComposeFile
     fi
 
-    if [[ "$*" != *"--no-postgresql"* ]] || [[ "$*" != *"--no-mongodb"* ]] || [[ "$*" != *"--no-redis"* ]]; then
-      echo "  links:" >> $dockerComposeFile
-    fi
-    if [[ "$*" != *"--no-postgresql"* ]]; then
+    echo "  links:" >> $dockerComposeFile
+    echo "    - redis" >> $dockerComposeFile
+    if [[ postrgresql = true ]]; then
       echo "    - postgresql" >> $dockerComposeFile
     fi
-    if [[ "$*" != *"--no-mongodb"* ]]; then
+    if [[ $mongo = true ]]; then
       echo "    - mongodb" >> $dockerComposeFile
-    fi
-    if [[ "$*" != *"--no-redis"* ]]; then
-      echo "    - redis" >> $dockerComposeFile
     fi
   fi
 
