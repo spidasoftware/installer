@@ -193,7 +193,7 @@ function createDockerComposeFile() {
 
     echo "  links:" >> $dockerComposeFile
     echo "    - redis" >> $dockerComposeFile
-    if [[ postrgresql = true ]]; then
+    if [[ $postrgresql = true ]]; then
       echo "    - postgresql" >> $dockerComposeFile
     fi
     if [[ $mongo = true ]]; then
