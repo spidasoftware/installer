@@ -260,5 +260,5 @@ installDocker
 dockerLogin
 createDockerComposeFile
 
-sudo /usr/bin/docker-compose -f $dockerComposeFile up -d
+sudo docker-compose -f $dockerComposeFile up -d
 sudo docker logout
