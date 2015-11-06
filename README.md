@@ -54,3 +54,23 @@ Argument            | Description
 --username          | dockerhub username (will prompt for username if argument is not passed)
 --email             | dockerhub email (will prompt for email if argument is not passed)
 --password          | dockerhub password (will prompt for email if argument is not passed)
+
+Docker Compose
+--------------
+
+The install script will create a docker-compose.yml file in the `backupdir`.  This is the is the main configuration location for SPIDAMin.  Configuration is set in SPIDAMin by setting environment variables in this docker compose file.  The following is a list of options for configuration beyond that that is done in the install script:
+
+ENV Name: description (default)
+
+* `DATABASE_CONNECTION_STRING`: the jdbc connection string to the database (jdbc:postgresql://postgresql:5432/minmaster)
+* `DATABASE_USERNAME`: the username for authentication to the database
+* `DATABASE_PASSWORD`: the password for authentication to the database
+* `DATABASE_DRIVER`: Class used for JDBC connection (org.postgresql.Driver)
+* `DATABASE_VALIDATION_QUERY`: (SELECT 1)
+* `UM_USER_TABLE`: The database table where the users are stored (um_user)
+* `UM_USER_DETAILS_TABLE`: the database table where the user details are stored (um_user_details)
+* `MONGODB_DATABASE`: the database name inside of mongodb (spidadb)
+* `MONGODB_HOST`: the host where the mongodb is hosted (mongo)
+* `MONGODB_PORT`: the port mongodb is running on (27017)
+* `MONGODB_USERNAME`: username for mongodb
+* `MONGODB_PASSWORD`: password for mongodb
