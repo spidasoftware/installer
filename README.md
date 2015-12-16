@@ -58,7 +58,7 @@ Argument            | Description
 Docker Compose
 --------------
 
-The install script will create a docker-compose.yml file in the `backupdir`.  This is the is the main configuration location for SPIDAMin.  Configuration is set in SPIDAMin by setting environment variables in this docker compose file.  The following is a list of options for configuration beyond that that is done in the install script:
+The install script will create a docker-compose.yml file in the `/etc/spida` dir.  This is the is the main configuration location for SPIDAMin.  Configuration is set in SPIDAMin by setting environment variables in this docker compose file.  The following is a list of options for configuration beyond that that is done in the install script:
 
 ENV Name: description (default)
 
