@@ -3,7 +3,7 @@
 ####################################################################################
 #
 # Vars
-# 
+#
 ####################################################################################
 serverRoot=`hostname -f`
 tag="latest"
@@ -25,7 +25,7 @@ apacheTag="latest"
 ####################################################################################
 #
 # Parses Args
-# 
+#
 ####################################################################################
 function parseCommandLineArguments() {
   while [ $# -gt 0 ]
@@ -55,15 +55,15 @@ function parseCommandLineArguments() {
                   --username          dockerhub username (will prompt for username if argument is not passed)
                   --email             dockerhub email (will prompt for email if argument is not passed)
                   --password          dockerhub password (will prompt for email if argument is not passed)
-                  --serverroot        server root that you will navigate to view the application (ex: min.com)  
-                  --backupdir         directory for mongo data, postgres data, files and backups (defaults to /apps/spidamin). This has to be backed up.
+                  --serverroot        server root that you will navigate to view the application (ex: min.com)
+                  --backupdir         directory for mongo data, postgres data, files and backups (defaults to /var/spida). This has to be backed up.
                   --dbpassword        database password
                   --mongopassword     mongodb password
                   --tomcatpassword    tomcat admin password
                   --userpassword      default spidamin user password
                   --no-spidamin       don't install spidamin
                   --no-postgresql     don't install postgresql
-                  --no-mongodb        don't install mongodb 
+                  --no-mongodb        don't install mongodb
               "
               exit 1;;
           *)  break;; # terminate while loop
@@ -85,7 +85,7 @@ function parseCommandLineArguments() {
 ####################################################################################
 #
 # Installs Docker
-# 
+#
 ####################################################################################
 function installDocker() {
   curl -sSL https://get.docker.com/ | sh
@@ -98,7 +98,7 @@ function installDocker() {
 ####################################################################################
 #
 # Logs in to Docker
-# 
+#
 ####################################################################################
 function dockerLogin() {
   if [[ "$dockerUsername" = "" ]]; then
@@ -125,7 +125,7 @@ function dockerLogin() {
 ####################################################################################
 #
 # Generates docker-compose.yml
-# 
+#
 ####################################################################################
 function createDockerComposeFile() {
   echo "Creating the docker-compose.yml file"
@@ -134,9 +134,9 @@ function createDockerComposeFile() {
     needEnvFile=true
   fi
 
-  dockerComposeFile=/var/lib/spida/docker-compose.yml
-  dockerEnvFile=/var/lib/spida/.docker-common.env
-  mkdir -p /var/lib/spida
+  dockerComposeFile=/etc/spida/docker-compose.yml
+  dockerEnvFile=/etc/spida/.docker-common.env
+  mkdir -p /etc/spida
   sudo rm -f $dockerComposeFile
   sudo touch $dockerComposeFile
 
@@ -174,8 +174,8 @@ function createDockerComposeFile() {
 
   HOST_MACHINE_HOST_NAME=`hostname -f`
   if [[ $spidaMin = true ]]; then
-    echo "spidamin: 
-  image: spidasoftware/min:$tag 
+    echo "spidamin:
+  image: spidasoftware/min:$tag
   restart: always
   volumes:
     - $filesDir:/var/lib/spida/files
@@ -183,11 +183,11 @@ function createDockerComposeFile() {
     - $geoserver:/var/lib/spida/geoserver
   environment:
     - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME" >> $dockerComposeFile
-    
+
     if [[ "$serverRoot" != "" ]]; then
       echo "    - SERVER_ROOT=$serverRoot" >> $dockerComposeFile
     fi
-    
+
     if [[ $needEnvFile = true ]]; then
       echo "  env_file: $dockerEnvFile" >> $dockerComposeFile
     fi
@@ -203,8 +203,8 @@ function createDockerComposeFile() {
   fi
 
   if [[ $postrgresql = true ]]; then
-    echo "postgresql: 
-  image: spidasoftware/postgresql 
+    echo "postgresql:
+  image: spidasoftware/postgresql
   restart: always
   volumes:
     - $postgresBackupDir:/backups
@@ -215,8 +215,8 @@ function createDockerComposeFile() {
   fi
 
   if [[ $mongo = true ]]; then
-    echo "mongodb: 
-  image: spidasoftware/mongodb 
+    echo "mongodb:
+  image: spidasoftware/mongodb
   restart: always
   volumes:
     - $mongoBackupDir:/backups
@@ -227,8 +227,8 @@ function createDockerComposeFile() {
   fi
 
   if [[ $spidaMin = true ]]; then
-    echo "redis: 
-  image: spidasoftware/redis 
+    echo "redis:
+  image: spidasoftware/redis
   restart: always" >> $dockerComposeFile
 
     echo "apache:
@@ -243,7 +243,7 @@ function createDockerComposeFile() {
     - $apachessl:/var/lib/spida/apache_ssl
   environment:
     - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME" >> $dockerComposeFile
-    
+
     if [[ "$serverRoot" != "" ]]; then
       echo "    - SERVER_ROOT=$serverRoot" >> $dockerComposeFile
     fi
@@ -253,7 +253,7 @@ function createDockerComposeFile() {
 ####################################################################################
 #
 # Execute above functions
-# 
+#
 ####################################################################################
 parseCommandLineArguments $@
 installDocker
