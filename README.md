@@ -3,7 +3,7 @@
 Requirements
 ------------
 
-1. Ubuntu 14.04+, RHEL 6.5+
+1. Ubuntu 14.04+, RHEL 7.0+
 2. A Docker Username that you have provided to SPIDA.
 
 
