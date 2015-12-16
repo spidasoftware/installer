@@ -6,7 +6,7 @@
 dockerUsername=""
 dockerEmail=""
 dockerPassword=""
-dockerComposeFile=/var/lib/spida/docker-compose.yml
+dockerComposeFile=/etc/spida/docker-compose.yml
 
 ####################################################################################
 # Parses Args
@@ -18,13 +18,16 @@ function parseCommandLineArguments() {
           --username)  dockerUsername="$2"; shift;;
           --email)  dockerEmail="$2"; shift;;
           --password)  dockerPassword="$2"; shift;;
+          --composefile)  dockerComposeFile="$2"; shift;;
+
           *)
               echo >&2 \
-              "usage: $0 [--username dockerHubUsername] [--email dockerHubEmail] [--password dockerHubPassword]
+              "usage: $0 [option value]
                 Options:
                   --username          dockerhub username (will prompt for username if argument is not passed)
                   --email             dockerhub email (will prompt for email if argument is not passed)
                   --password          dockerhub password (will prompt for email if argument is not passed)
+                  --composefile       the location of the docker compose file (defaults to $dockerComposeFile)
               "
               exit 1;;
           *)  break;; # terminate while loop
