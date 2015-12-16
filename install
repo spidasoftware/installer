@@ -18,9 +18,9 @@ defaulUserApiToken=""
 spidaMin=true
 postrgresql=true
 mongo=true
-backupDir="/apps/spidamin"
+backupDir="/var/spida"
+configDir="/etc/spida"
 apacheTag="latest"
-
 
 ####################################################################################
 #
@@ -38,6 +38,7 @@ function parseCommandLineArguments() {
           --email)  dockerEmail="$2"; shift;;
           --password)  dockerPassword="$2"; shift;;
           --backupdir)  backupDir="$2"; shift;;
+          --configdir)  configDir="$2"; shift;;
           --dbpassword)  databasePassword="$2"; shift;;
           --mongopassword)  mongoPassword="$2"; shift;;
           --tomcatpassword)  tomcatAdminPassword="$2"; shift;;
@@ -48,7 +49,7 @@ function parseCommandLineArguments() {
           --no-mongodb)  mongo=false;;
           *)
               echo >&2 \
-              "usage: $0 [--tag tag] [--apachetag apachetag] [--username dockerHubUsername] [--email dockerHubEmail] [--password dockerHubPassword] [--serverroot serverRoot] [--filesdir filesdir] [--dbpassword dbpassword] [--mongopassword mongopassword] [--tomcatpassword tomcatpassword] [--mongobackupdir mongobackupdir] [--postgresbackupdir postgresbackupdir] [--mongodatadir mongodatadir] [--no-spidamin] [--userpassword userpassword] [--no-postgresql] [--no-mongodb]
+              "usage: $0 [option value]
                 Options:
                   --tag               docker spidamin tag to deploy (defaults to latest)
                   --apachetag         docker apache tag to deploy (defaults to latest)
@@ -56,7 +57,8 @@ function parseCommandLineArguments() {
                   --email             dockerhub email (will prompt for email if argument is not passed)
                   --password          dockerhub password (will prompt for email if argument is not passed)
                   --serverroot        server root that you will navigate to view the application (ex: min.com)
-                  --backupdir         directory for mongo data, postgres data, files and backups (defaults to /var/spida). This has to be backed up.
+                  --backupdir         directory for mongo data, postgres data, files and backups (defaults to $backupDir). This has to be backed up.
+                  --configdir         directory for configuration and scripts (defaults to $configDir).
                   --dbpassword        database password
                   --mongopassword     mongodb password
                   --tomcatpassword    tomcat admin password
@@ -134,9 +136,9 @@ function createDockerComposeFile() {
     needEnvFile=true
   fi
 
-  dockerComposeFile=/etc/spida/docker-compose.yml
-  dockerEnvFile=/etc/spida/.docker-common.env
-  mkdir -p /etc/spida
+  dockerComposeFile=$configDir/docker-compose.yml
+  dockerEnvFile=$configDir/.docker-common.env
+  mkdir -p $configDir
   sudo rm -f $dockerComposeFile
   sudo touch $dockerComposeFile
 
@@ -228,7 +230,7 @@ function createDockerComposeFile() {
 
   if [[ $spidaMin = true ]]; then
     echo "redis:
-  image: spidasoftware/redis
+  image: spidasoftware/redis:15.0
   restart: always" >> $dockerComposeFile
 
     echo "apache:
