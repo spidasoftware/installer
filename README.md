@@ -28,7 +28,8 @@ Argument            | Description
 --email             | dockerhub email (will prompt for email if argument is not passed)
 --password          | dockerhub password (will prompt for email if argument is not passed)
 --serverroot        | server root that you will navigate to view the application (ex: min.com)  
---backupdir         | directory for mongo data, postgres data, files and backups (defaults to /apps/spidamin). This has to be backed up.
+--backupdir         | directory for mongo data, postgres data, files and backups (defaults to /var/spida). This has to be backed up.
+--configdir         | directory for configuration files (defaults to /etc/spida)
 --dbpassword        | database password
 --mongopassword     | mongodb password
 --tomcatpassword    | tomcat admin password
