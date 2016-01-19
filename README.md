@@ -76,3 +76,5 @@ ENV Name: description (default)
 * `MONGODB_USERNAME`: username for mongodb
 * `MONGODB_PASSWORD`: password for mongodb
 * `TOMCAT_MAX_MEMORY_MB`: max memory for the tomcat image (4096)
+* `ADMIN_USER_EMAIL`: login for default admin (admin@spidasoftware.com)
+
