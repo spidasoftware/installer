@@ -59,7 +59,7 @@ Argument            | Description
 Docker Compose
 --------------
 
-The install script will create a docker-compose.yml file in the `/etc/spida` dir.  This is the is the main configuration location for SPIDAMin.  Configuration is set in SPIDAMin by setting environment variables in this docker compose file.  The following is a list of options for configuration beyond that that is done in the install script:
+The install script will create a docker-compose.yml file in the `/etc/spida` dir.  This is the is the main configuration location for SPIDAMin.  Configuration is set in SPIDAMin by setting environment variables in this docker compose file.  The following is a list of options for configuration beyond what is done in the install script:
 
 ENV Name: description (default)
 
@@ -76,5 +76,7 @@ ENV Name: description (default)
 * `MONGODB_USERNAME`: username for mongodb
 * `MONGODB_PASSWORD`: password for mongodb
 * `TOMCAT_MAX_MEMORY_MB`: max memory for the tomcat image (4096)
+* `DEFAULT_PHASE_NAME`: default phase name for event phases (Open)
+* `WEBSOCKETS_SUPPORTED`: true or false if websockets should be used for messaging (true)
 * `ADMIN_USER_EMAIL`: login for default admin (admin@spidasoftware.com)
 
