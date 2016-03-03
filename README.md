@@ -79,4 +79,5 @@ ENV Name: description (default)
 * `DEFAULT_PHASE_NAME`: default phase name for event phases (Open)
 * `WEBSOCKETS_SUPPORTED`: true or false if websockets should be used for messaging (true)
 * `ADMIN_USER_EMAIL`: login for default admin (admin@spidasoftware.com)
+* `DAYS_UNTIL_USER_DEACTIVATED`: number of days before disabling inactive users (-1 to disable active check)
 
