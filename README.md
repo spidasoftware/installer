@@ -75,6 +75,7 @@ ENV Name: description (default)
 * `MONGODB_PORT`: the port mongodb is running on (27017)
 * `MONGODB_USERNAME`: username for mongodb
 * `MONGODB_PASSWORD`: password for mongodb
+* `TOMCAT_PASSWORD`: password for tomcat manager web application
 * `TOMCAT_MAX_MEMORY_MB`: max memory for the tomcat image (4096)
 * `DEFAULT_PHASE_NAME`: default phase name for event phases (Open)
 * `WEBSOCKETS_SUPPORTED`: true or false if websockets should be used for messaging (true)
