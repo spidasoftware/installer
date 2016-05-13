@@ -228,7 +228,7 @@ function createDockerComposeFile() {
 
   if [[ $spidaMin = true ]]; then
     echo "redis:
-  image: spidasoftware/redis:15.0
+  image: spidasoftware/redis
   restart: always" >> $dockerComposeFile
 
     echo "apache:
