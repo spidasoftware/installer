@@ -255,10 +255,27 @@ function createDockerComposeFile() {
 # Execute above functions
 #
 ####################################################################################
+function setupLogRotate() {
+  sudo touch /etc/logrotate.d/docker-container
+  echo "/var/lib/docker/containers/*/*.log {
+  rotate 7
+  daily
+  compress
+  size=1G
+  missingok
+  copytruncate
+}" >> /etc/logrotate.d/docker-container
+}
+####################################################################################
+#
+# Execute above functions
+#
+####################################################################################
 parseCommandLineArguments $@
 installDocker
 dockerLogin
 createDockerComposeFile
+setupLogRotate
 
 sudo docker-compose -f $dockerComposeFile up -d
 sudo docker logout
