@@ -252,7 +252,7 @@ function createDockerComposeFile() {
 
 ####################################################################################
 #
-# Execute above functions
+# Setup docker container log rotation
 #
 ####################################################################################
 function setupLogRotate() {
