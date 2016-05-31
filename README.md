@@ -86,3 +86,12 @@ ENV Name: description (default)
 * `DATABASE_MIN_EVICTABLE_IDLE_TIME_MILLIS`: The minimum amount of time an object may sit idle in the pool before it is eligible for eviction in ms (60000)
 * `DATABASE_TIME_BETWEEN_EVICTION_RUNS_MILLIS`: The number of milliseconds to sleep between runs of the idle connection validation/cleaner thread (60000)
 * `DATABASE_MAX_WAIT`: The maximum number of milliseconds that the pool will wait (when there are no available connections) for a connection to be returned before throwing an exception (10000)
+
+SSL
+---
+
+If you are using your own ssl certificates you will need to place the needed files with the correct names in the `apache_ssl` folder that is located in your config dir. 
+
+1. `apache.pem`: (required) primary certificate
+2. `server.key`: (required) key to certificate
+3. `intermediate.pem`: (optional) intermediate certificate
