@@ -3,7 +3,6 @@
 ####################################################################################
 # Vars
 ####################################################################################
-dockerEmail=""
 dockerUsername=""
 dockerPassword=""
 dockerComposeFile=/etc/spida/docker-compose.yml
@@ -16,7 +15,6 @@ function parseCommandLineArguments() {
   do
       case "$1" in
           --username)  dockerUsername="$2"; shift;;
-          --email)  dockerEmail="$2"; shift;;
           --password)  dockerPassword="$2"; shift;;
           --composefile)  dockerComposeFile="$2"; shift;;
 
@@ -25,7 +23,6 @@ function parseCommandLineArguments() {
               "usage: $0 [option value]
                 Options:
                   --username          dockerhub username (will prompt for username if argument is not passed)
-                  --email             dockerhub email (will prompt for email if argument is not passed)
                   --password          dockerhub password (will prompt for password if argument is not passed)
                   --composefile       the location of the docker compose file (defaults to $dockerComposeFile)
               "
@@ -44,15 +41,11 @@ function dockerLogin() {
     read -p "Docker username: " dockerUsername
   fi
 
-  if [[ "$dockerEmail" = "" ]]; then
-    read -p "Docker email: " dockerEmail
-  fi
-
   if [[ "$dockerPassword" = "" ]]; then
   	read  -s -p "Docker password: " dockerPassword
   fi
 
-  sudo docker login -u $dockerUsername -e $dockerEmail -p $dockerPassword
+  sudo docker login -u $dockerUsername -p $dockerPassword
  
   if [ $? -ne 0 ]; then
     echo "login failed, exiting."
