@@ -123,7 +123,7 @@ function dockerLogin() {
   	read  -s -p "Docker password: " dockerPassword
   fi
 
-  sudo docker login -u $dockerUsername -e $dockerEmail -p $dockerPassword
+  sudo docker login -u $dockerUsername -p "$dockerPassword"
 
   if [ $? -ne 0 ]; then
     echo "login failed, exiting."
