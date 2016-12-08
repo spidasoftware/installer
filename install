@@ -8,7 +8,6 @@
 serverRoot=`hostname -f`
 tag="latest"
 dockerUsername=""
-dockerEmail=""
 dockerPassword=""
 databasePassword=""
 mongoPassword=""
@@ -35,7 +34,6 @@ function parseCommandLineArguments() {
           --apachetag)  apacheTag="$2"; shift;;
           --serverroot)  serverRoot="$2"; shift;;
           --username)  dockerUsername="$2"; shift;;
-          --email)  dockerEmail="$2"; shift;;
           --password)  dockerPassword="$2"; shift;;
           --backupdir)  backupDir="$2"; shift;;
           --configdir)  configDir="$2"; shift;;
@@ -54,8 +52,7 @@ function parseCommandLineArguments() {
                   --tag               docker spidamin tag to deploy (defaults to latest)
                   --apachetag         docker apache tag to deploy (defaults to latest)
                   --username          dockerhub username (will prompt for username if argument is not passed)
-                  --email             dockerhub email (will prompt for email if argument is not passed)
-                  --password          dockerhub password (will prompt for email if argument is not passed)
+                  --password          dockerhub password (will prompt for password if argument is not passed)
                   --serverroot        server root that you will navigate to view the application (ex: min.com)
                   --backupdir         directory for mongo data, postgres data, files and backups (defaults to $backupDir). This has to be backed up.
                   --configdir         directory for configuration and scripts (defaults to $configDir).
@@ -113,10 +110,6 @@ ExecStart=/usr/bin/docker daemon -H fd:// --storage-opt dm.basesize=50G" > /etc/
 function dockerLogin() {
   if [[ "$dockerUsername" = "" ]]; then
     read -p "Docker username: " dockerUsername
-  fi
-
-  if [[ "$dockerEmail" = "" ]]; then
-    read -p "Docker email: " dockerEmail
   fi
 
   if [[ "$dockerPassword" = "" ]]; then
