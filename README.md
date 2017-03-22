@@ -59,7 +59,9 @@ Argument            | Description
 Docker Compose
 --------------
 
-The install script will create a docker-compose.yml file in the `/etc/spida` dir.  This is the is the main configuration location for SPIDAMin.  Configuration is set in SPIDAMin by setting environment variables in this docker compose file.  The following is a list of options for configuration beyond what is done in the install script:
+The install script will create a `docker-compose.yml` file in the `/etc/spida` dir.  This is the is the main configuration location for SPIDAMin.  Configuration is set in SPIDAMin by setting environment variables in this docker compose file.  Environment variables that are common among several images are stored in `.docker-common.env`.  The `docker-compose.yml` file will read in that file for the images that share those variables.  This way you only need to change variables in one place instead of multiple places within `docker-compose.yml`.
+
+The following is a list of options for configuration beyond what is done in the install script:
 
 ENV Name: description (default)
 
@@ -71,11 +73,14 @@ ENV Name: description (default)
 * `DATABASE_BATCH_SIZE`: Max in() size for query (1000)
 * `UM_USER_TABLE`: The database table where the users are stored (um_user)
 * `UM_USER_DETAILS_TABLE`: the database table where the user details are stored (um_user_details)
+* `POSTGRES_USER`: username for postgresql (minmaster)
+* `POSTGRES_PASSWORD`: password for postgresql
+* `POSTGRES_DATABASE`: the database name inside of postgresql (minmaster)
+* `MONGODB_USERNAME`: username for mongodb (minmaster)
+* `MONGODB_PASSWORD`: password for mongodb
 * `MONGODB_DATABASE`: the database name inside of mongodb (spidadb)
 * `MONGODB_HOST`: the host where the mongodb is hosted (mongo)
 * `MONGODB_PORT`: the port mongodb is running on (27017)
-* `MONGODB_USERNAME`: username for mongodb
-* `MONGODB_PASSWORD`: password for mongodb
 * `TOMCAT_PASSWORD`: password for tomcat manager web application
 * `TOMCAT_MAX_MEMORY_MB`: max memory for the tomcat image (4096)
 * `DEFAULT_PHASE_NAME`: default phase name for event phases (Open)
