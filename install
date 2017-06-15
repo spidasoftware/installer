@@ -1,5 +1,5 @@
 #!/bin/bash
-
+  
 ####################################################################################
 #
 # Vars
@@ -17,7 +17,8 @@ defaulUserApiToken=""
 spidaMin=true
 postrgresql=true
 mongo=true
-backupDir="/var/spida"
+dockerStart=true
+backupDir="/apps/spidamin"
 configDir="/etc/spida"
 apacheTag="latest"
 
@@ -45,6 +46,7 @@ function parseCommandLineArguments() {
           --no-spidamin)  spidaMin=false;;
           --no-postgresql)  postrgresql=false;;
           --no-mongodb)  mongo=false;;
+          --no-start) dockerStart=false;;
           *)
               echo >&2 \
               "usage: $0 [option value]
@@ -278,5 +280,9 @@ dockerLogin
 createDockerComposeFile
 setupLogRotate
 
-sudo docker-compose -f $dockerComposeFile up -d
+if [ dockerStart = true ]; then
+	sudo docker-compose -f $dockerComposeFile up -d
+else
+	sudo docker-compose -f $dockerComposeFile pull
+fi
 sudo docker logout
