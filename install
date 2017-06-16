@@ -71,7 +71,7 @@ function parseCommandLineArguments() {
                   --no-mongodb        don't install mongodb
 				  --no-start          don't start any docker containers
 				  --has-docker        look for existing docker-compose.yml
-				  --disable-Countdown turn off countdown jobs
+				  --disable-countdown turn off countdown jobs
               "
               exit 1;;
           *)  break;; # terminate while loop
@@ -155,20 +155,20 @@ function createDockerComposeFile() {
   if [[ $needEnvFile = true ]]; then
     sudo rm -f $dockerEnvFile
     sudo touch $dockerEnvFile
-    if [[ "$databasePassword" != "" ]]; then
+    if [[ -n "$databasePassword" ]]; then
       echo "DATABASE_PASSWORD=$databasePassword" >> $dockerEnvFile
       echo "POSTGRES_PASSWORD=$databasePassword" >> $dockerEnvFile
     fi
-    if [[ "$mongoPassword" != "" ]]; then
+    if [[ -n "$mongoPassword" ]]; then
       echo "MONGODB_PASSWORD=$mongoPassword" >> $dockerEnvFile
     fi
-    if [[ "$tomcatAdminPassword" != "" ]]; then
+    if [[ -n "$tomcatAdminPassword" ]]; then
       echo "TOMCAT_PASSWORD=$tomcatAdminPassword" >> $dockerEnvFile
     fi
-    if [[ "$defaultUserPassword" != "" ]]; then
+    if [[ -n "$defaultUserPassword" ]]; then
       echo "ADMIN_USER_PASSWORD=$defaultUserPassword" >> $dockerEnvFile
     fi
-    if [[ "$defaulUserApiToken" != "" ]]; then
+    if [[ -n "$defaulUserApiToken" ]]; then
       echo "ADMIN_API_TOKEN=$defaulUserApiToken" >> $dockerEnvFile
     fi
 	if [[ -n "$disableCountdown" ]]; then
@@ -287,7 +287,7 @@ function setupLogRotate() {
 parseCommandLineArguments $@
 installDocker
 dockerLogin
-if [ $hasDockerConfig = false -o ! ( -f $configDir/docker-compose.yml -a -f $configDir/.docker-common.env ) ]; then
+if [ $hasDockerConfig = false -o ! \( -f $configDir/docker-compose.yml -a -f $configDir/.docker-common.env \) ]; then
 	createDockerComposeFile
 else
 	#We may still want to override the COUNTDOWN_DISABLED var
