@@ -302,7 +302,7 @@ else
 fi
 setupLogRotate
 
-if [ dockerStart = true ]; then
+if [ $dockerStart = true ]; then
 	sudo docker-compose -f $dockerComposeFile up -d
 else
 	sudo docker-compose -f $dockerComposeFile pull
