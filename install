@@ -15,9 +15,11 @@ tomcatAdminPassword=""
 defaultUserPassword=""
 defaulUserApiToken=""
 spidaMin=true
-postrgresql=true
+postgresql=true
 mongo=true
 dockerStart=true
+hasDockerConfig=false
+disableCountdown=false
 backupDir="/apps/spidamin"
 configDir="/etc/spida"
 apacheTag="latest"
@@ -44,9 +46,11 @@ function parseCommandLineArguments() {
           --userpassword)  defaultUserPassword="$2"; shift;;
           --apitoken)  defaulUserApiToken="$2"; shift;;
           --no-spidamin)  spidaMin=false;;
-          --no-postgresql)  postrgresql=false;;
+          --no-postgresql)  postgresql=false;;
           --no-mongodb)  mongo=false;;
           --no-start) dockerStart=false;;
+		  --has-docker) hasDockerConfig=true;;
+		  --disable-countdown) disableCountdown=true;;
           *)
               echo >&2 \
               "usage: $0 [option value]
@@ -65,6 +69,9 @@ function parseCommandLineArguments() {
                   --no-spidamin       don't install spidamin
                   --no-postgresql     don't install postgresql
                   --no-mongodb        don't install mongodb
+				  --no-start          don't start any docker containers
+				  --has-docker        look for existing docker-compose.yml
+				  --disable-Countdown turn off countdown jobs
               "
               exit 1;;
           *)  break;; # terminate while loop
@@ -164,6 +171,9 @@ function createDockerComposeFile() {
     if [[ "$defaulUserApiToken" != "" ]]; then
       echo "ADMIN_API_TOKEN=$defaulUserApiToken" >> $dockerEnvFile
     fi
+	if [[ -n "$disableCountdown" ]]; then
+	  echo "COUNTDOWN_DISABLED='true'" >> $dockerEnvFile
+	fi
   fi
 
   # setup mongo data dir, postgres data dir files dir and backsup dir
@@ -197,7 +207,7 @@ function createDockerComposeFile() {
 
     echo "  links:" >> $dockerComposeFile
     echo "    - redis" >> $dockerComposeFile
-    if [[ $postrgresql = true ]]; then
+    if [[ $postgresql = true ]]; then
       echo "    - postgresql" >> $dockerComposeFile
     fi
     if [[ $mongo = true ]]; then
@@ -205,7 +215,7 @@ function createDockerComposeFile() {
     fi
   fi
 
-  if [[ $postrgresql = true ]]; then
+  if [[ $postgresql = true ]]; then
     echo "postgresql:
   image: spidasoftware/postgresql
   restart: always
@@ -277,7 +287,19 @@ function setupLogRotate() {
 parseCommandLineArguments $@
 installDocker
 dockerLogin
-createDockerComposeFile
+if [ $hasDockerConfig = false -o ! ( -f $configDir/docker-compose.yml -a -f $configDir/.docker-common.env ) ]; then
+	createDockerComposeFile
+else
+	#We may still want to override the COUNTDOWN_DISABLED var
+	dockerEnvFile=$configDir/.docker-common.env
+	sed -i '/COUNTDOWN_DISABLED/d' $dockerEnvFile
+	if [ $COUNTDOWN_DISABLED = true ]; then
+		echo "COUNTDOWN_DISABLED='true'" >> $dockerEnvFile
+	fi
+
+	unset dockerEnvFile
+
+fi
 setupLogRotate
 
 if [ dockerStart = true ]; then
