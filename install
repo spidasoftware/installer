@@ -293,7 +293,7 @@ else
 	#We may still want to override the COUNTDOWN_DISABLED var
 	dockerEnvFile=$configDir/.docker-common.env
 	sed -i '/COUNTDOWN_DISABLED/d' $dockerEnvFile
-	if [ $COUNTDOWN_DISABLED = true ]; then
+	if [[ $disableCountdown = true ]]; then
 		echo "COUNTDOWN_DISABLED='true'" >> $dockerEnvFile
 	fi
 
