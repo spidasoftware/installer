@@ -303,6 +303,7 @@ fi
 setupLogRotate
 
 if [ $dockerStart = true ]; then
+	dockerComposeFile=$configDir/docker-compose.yml
 	sudo docker-compose -f $dockerComposeFile up -d
 else
 	sudo docker-compose -f $dockerComposeFile pull
