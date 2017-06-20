@@ -92,7 +92,7 @@ ENV Name: description (default)
 * `DATABASE_MIN_EVICTABLE_IDLE_TIME_MILLIS`: The minimum amount of time an object may sit idle in the pool before it is eligible for eviction in ms (60000)
 * `DATABASE_TIME_BETWEEN_EVICTION_RUNS_MILLIS`: The number of milliseconds to sleep between runs of the idle connection validation/cleaner thread (60000)
 * `DATABASE_MAX_WAIT`: The maximum number of milliseconds that the pool will wait (when there are no available connections) for a connection to be returned before throwing an exception (10000)
-* `DB_WFS_URL`: The SPIDADB wfs url, this defaults to http://localhost:8080/geoserver/wfs/DB which is the geoserver instance distributed with SPIDAMin.  Only set this if you host geoserver and don't use the SPIDAMin instance.
+* `GEOSERVER_URL`: The geoserver url, this defaults to http://localhost:8080/geoserver which is the geoserver instance distributed with SPIDAMin.  Only set this if you host geoserver and don't use the SPIDAMin instance.
 * `USERS_SERVICE_MAX_CONNECTIONS`: The maximum number of http connections for the users service(400)
 * `DEFAULT_DB_USER_ID`: The default user id to use in SPIDADB when pushing to DB and the user is not logged in(null)
 * `DEFAULT_DB_USER_EMAIL`: The default user email to use in SPIDADB when pushing to DB and the user is not logged in(null)
