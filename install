@@ -23,6 +23,7 @@ disableCountdown=false
 backupDir="/apps/spidamin"
 configDir="/etc/spida"
 apacheTag="latest"
+defaultApacheApp=""
 
 ####################################################################################
 #
@@ -49,29 +50,31 @@ function parseCommandLineArguments() {
           --no-postgresql)  postgresql=false;;
           --no-mongodb)  mongo=false;;
           --no-start) dockerStart=false;;
-		  --has-docker) hasDockerConfig=true;;
-		  --disable-countdown) disableCountdown=true;;
+    		  --has-docker) hasDockerConfig=true;;
+    		  --disable-countdown) disableCountdown=true;;
+          --default-apache-app)  defaultApacheApp="$2"; shift;;
           *)
               echo >&2 \
               "usage: $0 [option value]
                 Options:
-                  --tag               docker spidamin tag to deploy (defaults to latest)
-                  --apachetag         docker apache tag to deploy (defaults to latest)
-                  --username          dockerhub username (will prompt for username if argument is not passed)
-                  --password          dockerhub password (will prompt for password if argument is not passed)
-                  --serverroot        server root that you will navigate to view the application (ex: min.com)
-                  --backupdir         directory for mongo data, postgres data, files and backups (defaults to $backupDir). This has to be backed up.
-                  --configdir         directory for configuration and scripts (defaults to $configDir).
-                  --dbpassword        database password
-                  --mongopassword     mongodb password
-                  --tomcatpassword    tomcat admin password
-                  --userpassword      default spidamin user password
-                  --no-spidamin       don't install spidamin
-                  --no-postgresql     don't install postgresql
-                  --no-mongodb        don't install mongodb
-				  --no-start          don't start any docker containers
-				  --has-docker        look for existing docker-compose.yml
-				  --disable-countdown turn off countdown jobs
+                  --tag                 docker spidamin tag to deploy (defaults to latest)
+                  --apachetag           docker apache tag to deploy (defaults to latest)
+                  --username            dockerhub username (will prompt for username if argument is not passed)
+                  --password            dockerhub password (will prompt for password if argument is not passed)
+                  --serverroot          server root that you will navigate to view the application (ex: min.com)
+                  --backupdir           directory for mongo data, postgres data, files and backups (defaults to $backupDir). This has to be backed up.
+                  --configdir           directory for configuration and scripts (defaults to $configDir).
+                  --dbpassword          database password
+                  --mongopassword       mongodb password
+                  --tomcatpassword      tomcat admin password
+                  --userpassword        default spidamin user password
+                  --no-spidamin         don't install spidamin
+                  --no-postgresql       don't install postgresql
+                  --no-mongodb          don't install mongodb
+				          --no-start            don't start any docker containers
+				          --has-docker          look for existing docker-compose.yml
+				          --disable-countdown   turn off countdown jobs
+                  --default-apache-app  default apache app to redirect to (defaults to projectmanager)
               "
               exit 1;;
           *)  break;; # terminate while loop
@@ -259,6 +262,9 @@ function createDockerComposeFile() {
 
     if [[ "$serverRoot" != "" ]]; then
       echo "    - SERVER_ROOT=$serverRoot" >> $dockerComposeFile
+    fi
+    if [[ "$defaultApacheApp" != "" ]]; then
+      echo "    - DEFAULT_APP_NAME=$defaultApacheApp" >> $dockerComposeFile
     fi
   fi
 }
