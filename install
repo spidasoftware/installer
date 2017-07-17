@@ -23,7 +23,7 @@ disableCountdown=false
 backupDir="/apps/spidamin"
 configDir="/etc/spida"
 apacheTag="latest"
-defaultApacheApp="projectmanager"
+defaultApacheApp=""
 
 ####################################################################################
 #
