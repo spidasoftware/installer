@@ -189,6 +189,7 @@ function createDockerComposeFile() {
   geoserver="${backupDir}/geoserver"
   tomcatLogs="${backupDir}/logs/tomcat"
   spidaLogs="${backupDir}/logs/spida"
+  apacheLogs="${backupDir}/logs/apache"
   mkdir -p $filesDir $postgresBackupDir $mongoBackupDir $mongoDataDir $postgresDataDir $apachessl $geoserver $tomcatLogs $spidaLogs
 
   HOST_MACHINE_HOST_NAME=`hostname -f`
@@ -261,6 +262,7 @@ function createDockerComposeFile() {
     - \"443:443\"
   volumes:
     - $apachessl:/var/lib/spida/apache_ssl
+    - $apacheLogs:/var/log/apache2
   environment:
     - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME" >> $dockerComposeFile
 
