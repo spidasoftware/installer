@@ -190,7 +190,7 @@ function createDockerComposeFile() {
   tomcatLogs="${backupDir}/logs/tomcat"
   spidaLogs="${backupDir}/logs/spida"
   apacheLogs="${backupDir}/logs/apache"
-  mkdir -p $filesDir $postgresBackupDir $mongoBackupDir $mongoDataDir $postgresDataDir $apachessl $geoserver $tomcatLogs $spidaLogs
+  mkdir -p $filesDir $postgresBackupDir $mongoBackupDir $mongoDataDir $postgresDataDir $apachessl $geoserver $tomcatLogs $spidaLogs $apacheLogs
 
   HOST_MACHINE_HOST_NAME=`hostname -f`
   if [[ $spidaMin = true ]]; then
