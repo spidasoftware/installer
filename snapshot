@@ -15,6 +15,6 @@ fi
 
 sudo sync
 sudo fsfreeze -f /apps/spidamin
-gcloud compute disks snapshot $name --snapshot-names $name-v$DT --zone $zone
+gcloud compute disks snapshot $name --snapshot-names $name-v$DT --no-user-output-enabled --zone $zone
 sudo fsfreeze -u /apps/spidamin
-gcloud compute snapshots delete $name-v$DT2 -q
+gcloud compute snapshots delete $name-v$DT2 --no-user-output-enabled -q
