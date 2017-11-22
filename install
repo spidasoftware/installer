@@ -181,7 +181,7 @@ function createDockerComposeFile() {
   	  echo "COUNTDOWN_DISABLED='true'" >> $dockerEnvFile
   	fi
     if [[ -n "$sendgridApiKey" ]]; then
-      echo "BACKUP_JOBS_SENDGRID_API_KEY='${sendgridApiKey}'" >> $dockerEnvFile
+      echo "BACKUP_JOBS_SENDGRID_API_KEY=${sendgridApiKey}" >> $dockerEnvFile
     fi
   fi
 
