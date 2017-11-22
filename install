@@ -24,6 +24,7 @@ backupDir="/apps/spidamin"
 configDir="/etc/spida"
 apacheTag="latest"
 defaultApacheApp=""
+sendgridApiKey=""
 
 ####################################################################################
 #
@@ -53,6 +54,7 @@ function parseCommandLineArguments() {
     		  --has-docker) hasDockerConfig=true;;
     		  --disable-countdown) disableCountdown=true;;
           --default-apache-app)  defaultApacheApp="$2"; shift;;
+          --sendgrid-api-key) sendgridApiKey="$2"; shift;;
           *)
               echo >&2 \
               "usage: $0 [option value]
@@ -75,6 +77,7 @@ function parseCommandLineArguments() {
 				          --has-docker          look for existing docker-compose.yml
 				          --disable-countdown   turn off countdown jobs
                   --default-apache-app  default apache app to redirect to (defaults to projectmanager)
+                  --sendgrid-api-key)   sendgrid apikey that will be used to send emails when there is an error in a cron backup job
               "
               exit 1;;
           *)  break;; # terminate while loop
@@ -145,7 +148,7 @@ function dockerLogin() {
 function createDockerComposeFile() {
   echo "Creating the docker-compose.yml file"
   needEnvFile=false
-  if [[ "$databasePassword" != "" || "$mongoPassword" != "" || "$tomcatAdminPassword" != "" || "$defaultUserPassword" != "" || "$defaulUserApiToken" != "" ]]; then
+  if [[ "$databasePassword" != "" || "$mongoPassword" != "" || "$tomcatAdminPassword" != "" || "$defaultUserPassword" != "" || "$defaulUserApiToken" != "" || "$sendgridApiKey" != "" ]]; then
     needEnvFile=true
   fi
 
@@ -174,9 +177,12 @@ function createDockerComposeFile() {
     if [[ -n "$defaulUserApiToken" ]]; then
       echo "ADMIN_API_TOKEN=$defaulUserApiToken" >> $dockerEnvFile
     fi
-	if [[ -n "$disableCountdown" ]]; then
-	  echo "COUNTDOWN_DISABLED='true'" >> $dockerEnvFile
-	fi
+  	if [[ -n "$disableCountdown" ]]; then
+  	  echo "COUNTDOWN_DISABLED='true'" >> $dockerEnvFile
+  	fi
+    if [[ -n "$sendgridApiKey" ]]; then
+      echo "BACKUP_JOBS_SENDGRID_API_KEY='${sendgridApiKey}'" >> $dockerEnvFile
+    fi
   fi
 
   # setup mongo data dir, postgres data dir files dir and backsup dir
@@ -224,9 +230,14 @@ function createDockerComposeFile() {
   fi
 
   if [[ $postgresql = true ]]; then
+    POSTGRES_HOSTNAME="postgresql.${HOST_MACHINE_HOST_NAME}"
+    if [[ "$serverRoot" != "" ]]; then
+      POSTGRES_HOSTNAME="postgresql.${serverRoot}"
+    fi
     echo "postgresql:
   image: spidasoftware/postgresql
   restart: always
+  hostname: $POSTGRES_HOSTNAME
   volumes:
     - $postgresBackupDir:/backups
     - $postgresDataDir:/var/lib/postgresql/data" >> $dockerComposeFile
@@ -236,9 +247,14 @@ function createDockerComposeFile() {
   fi
 
   if [[ $mongo = true ]]; then
+    MONGODB_HOSTNAME="mongodb.${HOST_MACHINE_HOST_NAME}"
+    if [[ "$serverRoot" != "" ]]; then
+      MONGODB_HOSTNAME="mongodb.${serverRoot}"
+    fi
     echo "mongodb:
   image: spidasoftware/mongodb
   restart: always
+  hostname: $MONGODB_HOSTNAME
   volumes:
     - $mongoBackupDir:/backups
     - $mongoDataDir:/data/db" >> $dockerComposeFile
