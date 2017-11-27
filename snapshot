@@ -17,7 +17,7 @@ sudo sync
 sudo fsfreeze -f /apps/spidamin
 gcloud compute disks snapshot $name --snapshot-names $name-v$DT --no-user-output-enabled --zone $zone
 sudo fsfreeze -u /apps/spidamin
-LIST__STD_ERR=$(gcloud compute snapshots list --filter="name=('$name-v$DT2')" 2>&1 > /dev/null)
-if [[ "$LIST__STD_ERR" == "" ]]; then
+LIST_STD_ERR=$(gcloud compute snapshots list --filter="name=('$name-v$DT2')" 2>&1 > /dev/null)
+if [[ "$LIST_STD_ERR" == "" ]]; then
 	gcloud compute snapshots delete $name-v$DT2 --no-user-output-enabled -q
 fi
