@@ -8,16 +8,17 @@
 DT=`date +%Y%m%d`
 DT2=`date -d'-1 week' +%Y%m%d`
 name="$1"
-zone="$2"
+email="$2"
+zone="$3"
 if [[ "$zone" = "" ]]; then
 	zone="us-central1-a"
 fi
 
 sudo sync
 sudo fsfreeze -f /apps/spidamin
-gcloud compute disks snapshot $name --snapshot-names $name-v$DT --zone $zone
+std_err=$(gcloud compute disks snapshot $name --snapshot-names $name-v$DT --zone $zone 2>&1 > /dev/null)
 if [[ $? -ne 0 ]]; then
-	echo "error creating disk snapshot on $(hostname)" | mailx -s "$(hostname) gcloud disk snapshot error" andrew.strominger@spidasoftware.com
+        echo "error creating disk snapshot on $(hostname): $std_err" | mailx -s "$(hostname) gcloud disk snapshot error" "$email"
 fi
 sudo fsfreeze -u /apps/spidamin
 gcloud compute snapshots delete $name-v$DT2 --no-user-output-enabled -q
