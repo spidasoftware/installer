@@ -21,7 +21,11 @@ if [[ $? -ne 0 ]]; then
         echo "error creating disk snapshot on $(hostname): $std_err" | mailx -s "$(hostname) gcloud disk snapshot error" "$email"
 fi
 sudo fsfreeze -u /apps/spidamin
-std_err=$(gcloud compute snapshots delete $name-v$DT2 -q 2>&1 > /dev/null)
-+if [[ $? -ne 0 ]]; then
-+        echo "error deleting disk snapshot on $(hostname): $std_err" | mailx -s "$(hostname) gcloud disk snapshot error" "$email"
-+fi
+LIST__STD_ERR=$(gcloud compute snapshots list --filter="name=('$name-v$DT2')" 2>&1 > /dev/null)
+if [[ "$LIST__STD_ERR" == "" ]]; then
+	std_err=$(gcloud compute snapshots delete $name-v$DT2 -q 2>&1 > /dev/null)
+	if [[ $? -ne 0 ]]; then
+		echo "error deleting disk snapshot on $(hostname): $std_err" | mailx -s "$(hostname) gcloud disk snapshot error" "$email"
+	fi
+fi
+
