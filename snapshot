@@ -22,7 +22,7 @@ if [[ $? -ne 0 ]]; then
 fi
 sudo fsfreeze -u /apps/spidamin
 std_err=$(gcloud compute snapshots list --filter="name=('$name-v$DT2')" 2>&1 > /dev/null)
-# If the list doesn't return a snapshot then stderr is "Listed 0 items." and the exit code is 0 
+# If the list command doesn't return a snapshot, then stderr is "Listed 0 items." and the exit code is 0 
 if [[ "$std_err" == "" ]]; then
 	std_err=$(gcloud compute snapshots delete $name-v$DT2 -q 2>&1 > /dev/null)
 	if [[ $? -ne 0 ]]; then
