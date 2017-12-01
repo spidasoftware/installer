@@ -1,0 +1,15 @@
+#!/bin/bash
+THRESHOLD=80
+mount_point="$1"
+email="$2
+ROOT_PERCENTAGE=$(df -h / | grep -vE '^Filesystem' | awk '{ print $5 }' | cut -d'%' -f1)
+DATA_PERCENTAGE=$(df -h ${mount_point} | grep -vE '^Filesystem' | awk '{ print $5 }' | cut -d'%' -f1)
+
+if [ $ROOT_PERCENTAGE -ge $THRESHOLD ] || [ $DATA_PERCENTAGE -ge $THRESHOLD ]; then
+	message_text="<html><body>
+Almost out of disk space on $(hostname)<br />
+Root Disk Usage: $(df -h / | grep -vE '^Filesystem')<br />
+Data Disk Usage: $(df -h ${mount_point} | grep -vE '^Filesystem')
+</html></body>"
+	echo $message_text | mailx -a 'Content-Type: text/html' -s "Alert: Almost Out of Disk Space on $(hostname)" $email
+fi"
