@@ -25,6 +25,7 @@ configDir="/etc/spida"
 apacheTag="latest"
 defaultApacheApp=""
 sendgridApiKey=""
+alertEmail=""
 
 ####################################################################################
 #
@@ -55,6 +56,7 @@ function parseCommandLineArguments() {
     		  --disable-countdown) disableCountdown=true;;
           --default-apache-app)  defaultApacheApp="$2"; shift;;
           --sendgrid-api-key) sendgridApiKey="$2"; shift;;
+          --alert-email) alertEmail="$2"; shift;;
           *)
               echo >&2 \
               "usage: $0 [option value]
@@ -78,6 +80,7 @@ function parseCommandLineArguments() {
 				          --disable-countdown   turn off countdown jobs
                   --default-apache-app  default apache app to redirect to (defaults to projectmanager)
                   --sendgrid-api-key)   sendgrid apikey that will be used to send emails when there is an error in a cron backup job
+                  --alert-email)        email address to send alerts to when a backup job fails
               "
               exit 1;;
           *)  break;; # terminate while loop
@@ -148,7 +151,7 @@ function dockerLogin() {
 function createDockerComposeFile() {
   echo "Creating the docker-compose.yml file"
   needEnvFile=false
-  if [[ "$databasePassword" != "" || "$mongoPassword" != "" || "$tomcatAdminPassword" != "" || "$defaultUserPassword" != "" || "$defaulUserApiToken" != "" || "$sendgridApiKey" != "" ]]; then
+  if [[ "$databasePassword" != "" || "$mongoPassword" != "" || "$tomcatAdminPassword" != "" || "$defaultUserPassword" != "" || "$defaulUserApiToken" != "" || "$sendgridApiKey" != "" || "$alertEmail" != "" ]]; then
     needEnvFile=true
   fi
 
@@ -182,6 +185,9 @@ function createDockerComposeFile() {
   	fi
     if [[ -n "$sendgridApiKey" ]]; then
       echo "BACKUP_JOBS_SENDGRID_API_KEY=${sendgridApiKey}" >> $dockerEnvFile
+    fi
+     if [[ -n "$alertEmail" ]]; then
+      echo "ALERT_EMAIL=${alertEmail}" >> $dockerEnvFile
     fi
   fi
 
