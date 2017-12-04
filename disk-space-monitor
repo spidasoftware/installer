@@ -12,4 +12,4 @@ Root Disk Usage: $(df -h / | grep -vE '^Filesystem')<br />
 Data Disk Usage: $(df -h ${mount_point} | grep -vE '^Filesystem')
 </html></body>"
 	echo $message_text | mailx -a 'Content-Type: text/html' -s "Alert: Almost Out of Disk Space on $(hostname)" $email
-fi"
+fi
