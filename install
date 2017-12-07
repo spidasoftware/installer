@@ -22,6 +22,9 @@ hasDockerConfig=false
 disableCountdown=false
 backupDir="/apps/spidamin"
 configDir="/etc/spida"
+postgresqlTag="latest"
+mongodbTag="latest"
+redisTag="latest"
 apacheTag="latest"
 defaultApacheApp=""
 sendgridApiKey=""
@@ -37,6 +40,9 @@ function parseCommandLineArguments() {
   do
       case "$1" in
           --tag) tag="$2"; shift;;
+          --postgresqltag)  postgresqlTag="$2"; shift;;
+          --mongodbtag)  mongodbTag="$2"; shift;;
+          --redistag)  redisTag="$2"; shift;;
           --apachetag)  apacheTag="$2"; shift;;
           --serverroot)  serverRoot="$2"; shift;;
           --username)  dockerUsername="$2"; shift;;
@@ -62,6 +68,9 @@ function parseCommandLineArguments() {
               "usage: $0 [option value]
                 Options:
                   --tag                 docker spidamin tag to deploy (defaults to latest)
+                  --postgresqltag       docker postgresql tag to deploy (defaults to latest)
+                  --mongodbtag          docker mongodb tag to deploy (defaults to latest)
+                  --redistag            docker mongodb tag to deploy (defaults to latest)
                   --apachetag           docker apache tag to deploy (defaults to latest)
                   --username            dockerhub username (will prompt for username if argument is not passed)
                   --password            dockerhub password (will prompt for password if argument is not passed)
@@ -241,7 +250,7 @@ function createDockerComposeFile() {
       POSTGRES_HOSTNAME="postgresql.${serverRoot}"
     fi
     echo "postgresql:
-  image: spidasoftware/postgresql
+  image: spidasoftware/postgresql:$postgresqlTag
   restart: always
   hostname: $POSTGRES_HOSTNAME
   volumes:
@@ -258,7 +267,7 @@ function createDockerComposeFile() {
       MONGODB_HOSTNAME="mongodb.${serverRoot}"
     fi
     echo "mongodb:
-  image: spidasoftware/mongodb
+  image: spidasoftware/mongodb:$mongodbTag
   restart: always
   hostname: $MONGODB_HOSTNAME
   volumes:
@@ -271,7 +280,7 @@ function createDockerComposeFile() {
 
   if [[ $spidaMin = true ]]; then
     echo "redis:
-  image: spidasoftware/redis
+  image: spidasoftware/redis:$redisTag
   restart: always" >> $dockerComposeFile
 
     echo "apache:
