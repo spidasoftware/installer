@@ -67,5 +67,5 @@ sudo docker-compose -f $dockerComposeFile pull
 echo "starting new docker containers..."
 sudo docker-compose -f $dockerComposeFile up -d
 echo "removing old docker images"
-sudo docker rmi $(sudo docker images -q --filter 'dangling=true')
+sudo docker system prune --all --force
 sudo docker logout
