@@ -313,6 +313,7 @@ function createDockerComposeFile() {
 ####################################################################################
 function updateDockerComposeFile() {
   echo "updateDockerComposeFile START"
+  dockerComposeFile=$configDir/docker-compose.yml
   #We may still want to override the COUNTDOWN_DISABLED var
   dockerEnvFile=$configDir/.docker-common.env
   sed -i '/COUNTDOWN_DISABLED/d' $dockerEnvFile
