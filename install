@@ -312,6 +312,7 @@ function createDockerComposeFile() {
 #
 ####################################################################################
 function updateDockerComposeFile() {
+  echo "updateDockerComposeFile START"
   #We may still want to override the COUNTDOWN_DISABLED var
   dockerEnvFile=$configDir/.docker-common.env
   sed -i '/COUNTDOWN_DISABLED/d' $dockerEnvFile
@@ -353,6 +354,7 @@ function updateDockerComposeFile() {
     MONGODB_HOSTNAME="mongodb.${serverRoot}"
   fi
   sed -i "s/\s*hostname: mongodb\.\S*/  hostname: ${MONGODB_HOSTNAME}/g" $dockerComposeFile
+  echo "updateDockerComposeFile DONE"
 }
 
 ####################################################################################
