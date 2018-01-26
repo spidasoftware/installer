@@ -314,7 +314,7 @@ function createDockerComposeFile() {
 function updateDockerComposeFile() {
   dockerComposeFile=$configDir/docker-compose.yml
   HOST_MACHINE_HOST_NAME=`hostname -f`
-  
+
   #We may still want to override the COUNTDOWN_DISABLED var
   dockerEnvFile=$configDir/.docker-common.env
   sed -i '/COUNTDOWN_DISABLED/d' $dockerEnvFile
@@ -325,8 +325,8 @@ function updateDockerComposeFile() {
   unset dockerEnvFile
   
   # Update the server root and the host machine
-  sed -i "s/\s*- SERVER_ROOT=\S*$/    - SERVER_ROOT=${serverRoot}/" $dockerComposeFile
-  sed -i "s/\s*- HOST_MACHINE_HOST_NAME=\S*$/    - HOST_MACHINE_HOST_NAME=${HOST_MACHINE_HOST_NAME}/" $dockerComposeFile
+  sed -i "s/\s*- SERVER_ROOT=\S*$/    - SERVER_ROOT=${serverRoot}/g" $dockerComposeFile
+  sed -i "s/\s*- HOST_MACHINE_HOST_NAME=\S*$/    - HOST_MACHINE_HOST_NAME=${HOST_MACHINE_HOST_NAME}/g" $dockerComposeFile
 
   # Update the docker image tags, if they were passed in, they aren't latest.
   if [ "$tag" != "latest" ]; then
