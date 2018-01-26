@@ -324,37 +324,37 @@ function updateDockerComposeFile() {
   unset dockerEnvFile
   
   # Update the server root and the host machine
-  sed -i "s/\s*- SERVER_ROOT=\S*$/    - SERVER_ROOT=${serverRoot}/g" $dockerComposeFile
-  sed -i "s/\s*- HOST_MACHINE_HOST_NAME=\S*$/    - HOST_MACHINE_HOST_NAME=${HOST_MACHINE_HOST_NAME}/g" $dockerComposeFile
+  sed -i "s/\s*- SERVER_ROOT=\S*$/    - SERVER_ROOT=${serverRoot}/" $dockerComposeFile
+  sed -i "s/\s*- HOST_MACHINE_HOST_NAME=\S*$/    - HOST_MACHINE_HOST_NAME=${HOST_MACHINE_HOST_NAME}/" $dockerComposeFile
 
   # Update the docker image tags, if they were passed in, they aren't latest.
   if [ "$tag" != "latest" ]; then
     sed -i "s/spidasoftware\/min:\S*$/spidasoftware\/min:$tag/g" $dockerComposeFile
   fi
   if [ "$postgresqlTag" != "latest" ]; then
-    sed -i "s/spidasoftware\/postgresql:\S*$/spidasoftware\/postgresql:v${postgresqlTag}/g" $dockerComposeFile
+    sed -i "s/spidasoftware\/postgresql:\S*$/spidasoftware\/postgresql:v${postgresqlTag}/" $dockerComposeFile
   fi
   if [ "$mongodbTag" != "latest" ]; then
-    sed -i "s/spidasoftware\/mongodb:\S*$/spidasoftware\/mongodb:v${mongodbTag}/g" $dockerComposeFile
+    sed -i "s/spidasoftware\/mongodb:\S*$/spidasoftware\/mongodb:v${mongodbTag}/" $dockerComposeFile
   fi
   if [ "$redisTag" != "latest" ]; then
-    sed -i "s/spidasoftware\/redis:\S*$/spidasoftware\/redis:v${redisTag}/g" $dockerComposeFile
+    sed -i "s/spidasoftware\/redis:\S*$/spidasoftware\/redis:v${redisTag}/" $dockerComposeFile
   fi
   if [ "$apacheTag" != "latest" ]; then
-    sed -i "s/spidasoftware\/apache:\S*$/spidasoftware\/apache:${apacheTag}/g" $dockerComposeFile
+    sed -i "s/spidasoftware\/apache:\S*$/spidasoftware\/apache:${apacheTag}/" $dockerComposeFile
   fi
 
   POSTGRES_HOSTNAME="postgresql.${HOST_MACHINE_HOST_NAME}"
   if [[ "$serverRoot" != "" ]]; then
     POSTGRES_HOSTNAME="postgresql.${serverRoot}"
   fi
-  sed -i "s/\s*hostname: postgresql\.\S*/  hostname: ${POSTGRES_HOSTNAME}/g" $dockerComposeFile
+  sed -i "s/\s*hostname: postgresql\.\S*/  hostname: ${POSTGRES_HOSTNAME}/" $dockerComposeFile
 
   MONGODB_HOSTNAME="mongodb.${HOST_MACHINE_HOST_NAME}"
   if [[ "$serverRoot" != "" ]]; then
     MONGODB_HOSTNAME="mongodb.${serverRoot}"
   fi
-  sed -i "s/\s*hostname: mongodb\.\S*/  hostname: ${MONGODB_HOSTNAME}/g" $dockerComposeFile
+  sed -i "s/\s*hostname: mongodb\.\S*/  hostname: ${MONGODB_HOSTNAME}/" $dockerComposeFile
   echo "updateDockerComposeFile DONE"
 }
 
