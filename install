@@ -308,7 +308,7 @@ function createDockerComposeFile() {
 
 ####################################################################################
 #
-# Generates docker-compose.yml
+# Updates docker-compose.yml
 #
 ####################################################################################
 function updateDockerComposeFile() {
