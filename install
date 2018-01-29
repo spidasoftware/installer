@@ -128,7 +128,7 @@ waitFor() {
 
 waitForService() {
   waitFor \
-    "./execg.sh $RESTORED_NAME 'sudo docker ps' | grep -q '$1'" \
+    "sudo docker ps' | grep -q '$1'" \
     "Checking if $1 is up..." \
     "$1 is not up, waiting..." \
     "$1 is up"
