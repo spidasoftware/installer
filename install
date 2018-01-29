@@ -107,6 +107,32 @@ function parseCommandLineArguments() {
   echo "--------------------------------------------------------------------------------------"
 }
 
+waitFor() {
+  CMD=$1; shift
+  CHECK_MSG=$1; shift;
+  WAIT_MSG=$1; shift;
+  UP_MSG=$1
+
+  IS_UP=1
+  while [ $IS_UP != 0 ]; do
+    echo "$CHECK_MSG"
+    eval $CMD
+    IS_UP=$?
+    if [ $IS_UP != 0 ]; then
+      echo "$WAIT_MSG"
+      sleep 60
+    fi
+  done
+  echo "$UP_MSG"
+}
+
+waitForService() {
+  waitFor \
+    "./execg.sh $RESTORED_NAME 'sudo docker ps' | grep -q '$1'" \
+    "Checking if $1 is up..." \
+    "$1 is not up, waiting..." \
+    "$1 is up"
+}
 
 ####################################################################################
 #
@@ -322,7 +348,7 @@ function updateDockerComposeFile() {
     echo "COUNTDOWN_DISABLED='true'" >> $dockerEnvFile
   fi
 
-  unset dockerEnvFile
+  
   
   # Update the server root and the host machine
   sed -i "s/\s*- SERVER_ROOT=\S*$/    - SERVER_ROOT=${serverRoot}/g" $dockerComposeFile
@@ -356,6 +382,45 @@ function updateDockerComposeFile() {
     MONGODB_HOSTNAME="mongodb.${serverRoot}"
   fi
   sed -i "s/\s*hostname: mongodb\.\S*/  hostname: ${MONGODB_HOSTNAME}/" $dockerComposeFile
+
+  # Update the passwords, if they're passed in
+  if [[ -n "$databasePassword" ]]; then
+    sed -i "/DATABASE_PASSWORD=\S*$/d" $dockerEnvFile
+    sed -i "/POSTGRES_PASSWORD=\S*$/d" $dockerEnvFile
+    echo "DATABASE_PASSWORD=$databasePassword" >> $dockerEnvFile
+    echo "POSTGRES_PASSWORD=$databasePassword" >> $dockerEnvFile
+  fi
+  if [[ -n "$mongoPassword" ]]; then
+    sed -i "/MONGODB_PASSWORD=\S*$/d" $dockerEnvFile
+    echo "MONGODB_PASSWORD=$mongoPassword" >> $dockerEnvFile
+    rm $backupDir/mongoData/.mongodb_password_set
+  fi
+  if [[ -n "$tomcatAdminPassword" ]]; then
+    sed -i "/TOMCAT_PASSWORD=\S*$/d" $dockerEnvFile
+    echo "TOMCAT_PASSWORD=$tomcatAdminPassword" >> $dockerEnvFile
+  fi
+  if [[ -n "$defaultUserPassword" ]]; then
+    sed -i "/ADMIN_USER_PASSWORD=\S*$/d" $dockerEnvFile
+    echo "ADMIN_USER_PASSWORD=$defaultUserPassword" >> $dockerEnvFile
+  fi
+  if [[ -n "$defaulUserApiToken" ]]; then
+    sed -i "/ADMIN_API_TOKEN=\S*$/d" $dockerEnvFile
+    echo "ADMIN_API_TOKEN=$defaulUserApiToken" >> $dockerEnvFile
+  fi
+  if [[ -n "$disableCountdown" ]]; then
+    sed -i "/COUNTDOWN_DISABLED=\S*$/d" $dockerEnvFile
+    echo "COUNTDOWN_DISABLED='true'" >> $dockerEnvFile
+  fi
+  if [[ -n "$sendgridApiKey" ]]; then
+    sed -i "/BACKUP_JOBS_SENDGRID_API_KEY=\S*$/d" $dockerEnvFile
+    echo "BACKUP_JOBS_SENDGRID_API_KEY=${sendgridApiKey}" >> $dockerEnvFile
+  fi
+   if [[ -n "$alertEmail" ]]; then
+    sed -i "/ALERT_EMAIL=\S*$/d" $dockerEnvFile
+    echo "ALERT_EMAIL=${alertEmail}" >> $dockerEnvFile
+  fi
+
+  unset dockerEnvFile
 }
 
 ####################################################################################
@@ -383,16 +448,27 @@ parseCommandLineArguments $@
 installDocker
 dockerLogin
 if [ $hasDockerConfig = false -o ! \( -f $configDir/docker-compose.yml -a -f $configDir/.docker-common.env \) ]; then
+  updatePasswords=false
 	createDockerComposeFile
 else
   updateDockerComposeFile
+  updatePasswords=true
 fi
 setupLogRotate
 
+dockerComposeFile=$configDir/docker-compose.yml
+if [ $updatePasswords = true ]; then
+  sudo docker-compose -f $dockerComposeFile up -d postgresql
+  waitForService postgresql
+  sudo docker exec spida_postgresql_1 /reset-passwords.sh
+fi
+
 if [ $dockerStart = true ]; then
-	dockerComposeFile=$configDir/docker-compose.yml
 	sudo docker-compose -f $dockerComposeFile up -d
 else
+  if [ $updatePasswords = true ]; then
+    sudo docker-compose -f $dockerComposeFile down
+  fi
 	sudo docker-compose -f $dockerComposeFile pull
 fi
 sudo docker logout
