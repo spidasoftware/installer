@@ -333,13 +333,13 @@ function updateDockerComposeFile() {
     sed -i "s/spidasoftware\/min:\S*$/spidasoftware\/min:$tag/g" $dockerComposeFile
   fi
   if [ "$postgresqlTag" != "latest" ]; then
-    sed -i "s/spidasoftware\/postgresql:\S*$/spidasoftware\/postgresql:v${postgresqlTag}/" $dockerComposeFile
+    sed -i "s/spidasoftware\/postgresql:\S*$/spidasoftware\/postgresql:${postgresqlTag}/" $dockerComposeFile
   fi
   if [ "$mongodbTag" != "latest" ]; then
-    sed -i "s/spidasoftware\/mongodb:\S*$/spidasoftware\/mongodb:v${mongodbTag}/" $dockerComposeFile
+    sed -i "s/spidasoftware\/mongodb:\S*$/spidasoftware\/mongodb:${mongodbTag}/" $dockerComposeFile
   fi
   if [ "$redisTag" != "latest" ]; then
-    sed -i "s/spidasoftware\/redis:\S*$/spidasoftware\/redis:v${redisTag}/" $dockerComposeFile
+    sed -i "s/spidasoftware\/redis:\S*$/spidasoftware\/redis:${redisTag}/" $dockerComposeFile
   fi
   if [ "$apacheTag" != "latest" ]; then
     sed -i "s/spidasoftware\/apache:\S*$/spidasoftware\/apache:${apacheTag}/" $dockerComposeFile
