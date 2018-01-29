@@ -338,7 +338,6 @@ function createDockerComposeFile() {
 #
 ####################################################################################
 function updateDockerComposeFile() {
-  echo "updateDockerComposeFileupdateDockerComposeFileupdateDockerComposeFile"
   dockerComposeFile=$configDir/docker-compose.yml
   HOST_MACHINE_HOST_NAME=`hostname -f`
 
@@ -400,14 +399,9 @@ function updateDockerComposeFile() {
     sed -i "/TOMCAT_PASSWORD=\S*$/d" $dockerEnvFile
     echo "TOMCAT_PASSWORD=$tomcatAdminPassword" >> $dockerEnvFile
   fi
-  echo "defaultUserPassword=$defaultUserPassword"
   if [[ -n "$defaultUserPassword" ]]; then
-    echo "cat $dockerEnvFile"
-    cat $dockerEnvFile
     sed -i "/ADMIN_USER_PASSWORD=\S*$/d" $dockerEnvFile
     echo "ADMIN_USER_PASSWORD=$defaultUserPassword" >> $dockerEnvFile
-    echo "cat AFTER $dockerEnvFile"
-    cat $dockerEnvFile
   fi
   if [[ -n "$defaulUserApiToken" ]]; then
     sed -i "/ADMIN_API_TOKEN=\S*$/d" $dockerEnvFile
@@ -463,9 +457,10 @@ fi
 setupLogRotate
 
 dockerComposeFile=$configDir/docker-compose.yml
-if [ $updatePasswords = true ]; then
+if [ $updatePasswords = true ] && [ $postgresql = true ]; then
   sudo docker-compose -f $dockerComposeFile up -d postgresql
   waitForService postgresql
+  sleep 30
   sudo docker exec spida_postgresql_1 /reset-passwords.sh
 fi
 
