@@ -338,6 +338,7 @@ function createDockerComposeFile() {
 #
 ####################################################################################
 function updateDockerComposeFile() {
+  echo "updateDockerComposeFileupdateDockerComposeFileupdateDockerComposeFile"
   dockerComposeFile=$configDir/docker-compose.yml
   HOST_MACHINE_HOST_NAME=`hostname -f`
 
