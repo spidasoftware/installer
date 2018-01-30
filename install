@@ -343,15 +343,11 @@ function updateDockerComposeFile() {
 
   #We may still want to override the COUNTDOWN_DISABLED var
   dockerEnvFile=$configDir/.docker-common.env
-  echo "cat $dockerEnvFile"
-  cat $dockerEnvFile
   sed -i '/COUNTDOWN_DISABLED/d' $dockerEnvFile
-  echo "disableCountdown=$disableCountdown"
   if [[ $disableCountdown = true ]]; then
     echo "COUNTDOWN_DISABLED='true'" >> $dockerEnvFile
   fi
-  echo "AFTER cat $dockerEnvFile"
-  cat $dockerEnvFile
+
   # Update the server root and the host machine
   sed -i "s/\s*- SERVER_ROOT=\S*$/    - SERVER_ROOT=${serverRoot}/g" $dockerComposeFile
   sed -i "s/\s*- HOST_MACHINE_HOST_NAME=\S*$/    - HOST_MACHINE_HOST_NAME=${HOST_MACHINE_HOST_NAME}/g" $dockerComposeFile
@@ -408,10 +404,6 @@ function updateDockerComposeFile() {
   if [[ -n "$defaulUserApiToken" ]]; then
     sed -i "/ADMIN_API_TOKEN=\S*$/d" $dockerEnvFile
     echo "ADMIN_API_TOKEN=$defaulUserApiToken" >> $dockerEnvFile
-  fi
-  if [[ -n "$disableCountdown" ]]; then
-    sed -i "/COUNTDOWN_DISABLED=\S*$/d" $dockerEnvFile
-    echo "COUNTDOWN_DISABLED='true'" >> $dockerEnvFile
   fi
   if [[ -n "$sendgridApiKey" ]]; then
     sed -i "/BACKUP_JOBS_SENDGRID_API_KEY=\S*$/d" $dockerEnvFile
