@@ -6,7 +6,6 @@
 #
 ####################################################################################
 serverRoot=`hostname -f`
-tag="latest"
 dockerUsername=""
 dockerPassword=""
 databasePassword=""
@@ -22,10 +21,16 @@ hasDockerConfig=false
 disableCountdown=false
 backupDir="/apps/spidamin"
 configDir="/etc/spida"
+tag="latest"
 postgresqlTag="latest"
 mongodbTag="latest"
 redisTag="latest"
 apacheTag="latest"
+MIN_TAG_PASSED=false
+POSTGRESQL_TAG_PASSED=false
+MONGODB_TAG_PASSED=false
+REDIS_TAG_PASSED=false
+APACHE_TAG_PASSED=false
 defaultApacheApp=""
 sendgridApiKey=""
 alertEmail=""
@@ -39,11 +44,11 @@ function parseCommandLineArguments() {
   while [ $# -gt 0 ]
   do
       case "$1" in
-          --tag) tag="$2"; shift;;
-          --postgresqltag)  postgresqlTag="$2"; shift;;
-          --mongodbtag)  mongodbTag="$2"; shift;;
-          --redistag)  redisTag="$2"; shift;;
-          --apachetag)  apacheTag="$2"; shift;;
+          --tag) tag="$2"; MIN_TAG_PASSED=true; shift;;
+          --postgresqltag)  postgresqlTag="$2"; POSTGRESQL_TAG_PASSED=true; shift;;
+          --mongodbtag)  mongodbTag="$2"; MONGODB_TAG_PASSED=true; shift;;
+          --redistag)  redisTag="$2"; REDIS_TAG_PASSED=true; shift;;
+          --apachetag)  apacheTag="$2"; APACHE_TAG_PASSED=true; shift;;
           --serverroot)  serverRoot="$2"; shift;;
           --username)  dockerUsername="$2"; shift;;
           --password)  dockerPassword="$2"; shift;;
@@ -353,19 +358,19 @@ function updateDockerComposeFile() {
   sed -i "s/\s*- HOST_MACHINE_HOST_NAME=\S*$/    - HOST_MACHINE_HOST_NAME=${HOST_MACHINE_HOST_NAME}/g" $dockerComposeFile
 
   # Update the docker image tags, if they were passed in, they aren't latest.
-  if [ "$tag" != "latest" ]; then
+  if [ $MIN_TAG_PASSED = true ]; then
     sed -i "s/spidasoftware\/min:\S*$/spidasoftware\/min:$tag/g" $dockerComposeFile
   fi
-  if [ "$postgresqlTag" != "latest" ]; then
+  if [ $POSTGRESQL_TAG_PASSED = true ]; then
     sed -i "s/spidasoftware\/postgresql:\S*$/spidasoftware\/postgresql:${postgresqlTag}/" $dockerComposeFile
   fi
-  if [ "$mongodbTag" != "latest" ]; then
+  if [ $MONGODB_TAG_PASSED = true ]; then
     sed -i "s/spidasoftware\/mongodb:\S*$/spidasoftware\/mongodb:${mongodbTag}/" $dockerComposeFile
   fi
-  if [ "$redisTag" != "latest" ]; then
+  if [ $REDIS_TAG_PASSED = true ]; then
     sed -i "s/spidasoftware\/redis:\S*$/spidasoftware\/redis:${redisTag}/" $dockerComposeFile
   fi
-  if [ "$apacheTag" != "latest" ]; then
+  if [ $APACHE_TAG_PASSED = true ]; then
     sed -i "s/spidasoftware\/apache:\S*$/spidasoftware\/apache:${apacheTag}/" $dockerComposeFile
   fi
 
