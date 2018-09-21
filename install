@@ -12,6 +12,7 @@ databasePassword=""
 mongoPassword=""
 tomcatAdminPassword=""
 defaultUserPassword=""
+samlPassword=""
 defaulUserApiToken=""
 spidaMin=true
 postgresql=true
@@ -58,6 +59,7 @@ function parseCommandLineArguments() {
           --mongopassword)  mongoPassword="$2"; shift;;
           --tomcatpassword)  tomcatAdminPassword="$2"; shift;;
           --userpassword)  defaultUserPassword="$2"; shift;;
+          --samlpassword)  samlPassword="$2"; shift;;
           --apitoken)  defaulUserApiToken="$2"; shift;;
           --no-spidamin)  spidaMin=false;;
           --no-postgresql)  postgresql=false;;
@@ -86,6 +88,7 @@ function parseCommandLineArguments() {
                   --mongopassword       mongodb password
                   --tomcatpassword      tomcat admin password
                   --userpassword        default spidamin user password
+                  --samlpassword        saml keystore password
                   --no-spidamin         don't install spidamin
                   --no-postgresql       don't install postgresql
                   --no-mongodb          don't install mongodb
@@ -226,8 +229,11 @@ function createDockerComposeFile() {
     if [[ -n "$sendgridApiKey" ]]; then
       echo "BACKUP_JOBS_SENDGRID_API_KEY=${sendgridApiKey}" >> $dockerEnvFile
     fi
-     if [[ -n "$alertEmail" ]]; then
+    if [[ -n "$alertEmail" ]]; then
       echo "ALERT_EMAIL=${alertEmail}" >> $dockerEnvFile
+    fi
+    if [[ -n "$samlPassword" ]]; then
+      echo "SAML_PASSWORD=${samlPassword}" >> $dockerEnvFile
     fi
   fi
 
@@ -414,9 +420,13 @@ function updateDockerComposeFile() {
     sed -i "/BACKUP_JOBS_SENDGRID_API_KEY=\S*$/d" $dockerEnvFile
     echo "BACKUP_JOBS_SENDGRID_API_KEY=${sendgridApiKey}" >> $dockerEnvFile
   fi
-   if [[ -n "$alertEmail" ]]; then
+  if [[ -n "$alertEmail" ]]; then
     sed -i "/ALERT_EMAIL=\S*$/d" $dockerEnvFile
     echo "ALERT_EMAIL=${alertEmail}" >> $dockerEnvFile
+  fi
+  if [[ -n "$samlPassword" ]]; then
+    sed -i "/SAML_PASSWORD=\S*$/d" $dockerEnvFile
+      echo "SAML_PASSWORD=${samlPassword}" >> $dockerEnvFile
   fi
 
   unset dockerEnvFile
