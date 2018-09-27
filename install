@@ -233,7 +233,7 @@ function createDockerComposeFile() {
       echo "ALERT_EMAIL=${alertEmail}" >> $dockerEnvFile
     fi
     if [[ -n "$samlPassword" ]]; then
-      echo "SAML_PASSWORD=${samlPassword}" >> $dockerEnvFile
+      echo "SAML_PW=${samlPassword}" >> $dockerEnvFile
     fi
   fi
 
