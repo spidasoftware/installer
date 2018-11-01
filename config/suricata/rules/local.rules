@@ -1,4 +1,4 @@
-pass tcp $HOME_NET any -> 169.254.169.254 80 (msg: "Allow Google Metadata";)
+pass tcp $HOME_NET any -> 169.254.169.254 any (msg: "Allow Google Metadata";)
 alert tcp any ![80,443] -> $HOME_NET ![80,443,22] (msg: "SPIDA ALERT: Unexpected incoming port"; priority: 2; classtype:network-scan; sid: 99901;)
 alert tcp $HOME_NET ![80,443,22] -> any ![80,443] (msg: "SPIDA ALERT: Unexpected outgoing port"; priority: 2; classtype:unusual-client-port-connection; sid: 99902;)
 alert udp $HOME_NET any -> any !53 (msg: "SPIDA ALERT: Unexpected non-TCP traffic"; priority: 2; classtype:non-standard-protocol; sid: 99903;)
