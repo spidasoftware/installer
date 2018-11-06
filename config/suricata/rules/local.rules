@@ -1,10 +1,12 @@
 #Allow Google specific communication
-pass tcp $HOME_NET any -> 169.254.169.254 80 (msg: "Allow Google Metadata";)
-pass udp $HOME_NET any -> 169.254.169.254 123 (msg: "Allow Google Metadata";)
-pass udp 169.254.169.254 123 -> $HOME_NET any (msg: "Allow Google Metadata";)
+#SIDs start at 99800
+pass tcp $HOME_NET any -> 169.254.169.254 80 (msg: "Allow Google Metadata"; sid: 99801;)
+pass udp $HOME_NET any -> 169.254.169.254 123 (msg: "Allow Google Metadata"; sid: 99802;)
+pass udp 169.254.169.254 123 -> $HOME_NET any (msg: "Allow Google Metadata"; sid: 99803;)
 
 #Nothing other than SSH and HTTP(S) should be coming in out
 #Nothing other than DNS and HTTP(S) should be going out
+#SIDs start at 99900
 alert tcp any ![80,443] -> $HOME_NET ![80,443,22] (msg: "SPIDA ALERT: Unexpected incoming port"; priority: 2; classtype:network-scan; sid: 99901;)
 alert tcp $HOME_NET ![80,443,22] -> any ![80,443] (msg: "SPIDA ALERT: Unexpected outgoing port"; priority: 2; classtype:unusual-client-port-connection; sid: 99902;)
 alert udp $HOME_NET any -> any !53 (msg: "SPIDA ALERT: Unexpected non-TCP traffic"; priority: 2; classtype:non-standard-protocol; sid: 99903;)
