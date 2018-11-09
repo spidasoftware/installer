@@ -1,0 +1,22 @@
+#!/bin/bash
+
+curl -sS https://raw.githubusercontent.com/spidasoftware/installer/master/config/auditd/execve.rules > /etc/audit/rules.d/execve.rules  
+curl -sS https://raw.githubusercontent.com/spidasoftware/installer/master/config/cron/oinkmaster > /etc/cron.daily/oinkmaster  
+chmod a+x /etc/cron.daily/oinkmaster  
+curl -sS https://raw.githubusercontent.com/spidasoftware/installer/master/config/fluentd/audit.conf > /etc/google-fluentd/config.d/audit.conf  
+curl -sS https://raw.githubusercontent.com/spidasoftware/installer/master/config/fluentd/spidamin.conf > /etc/google-fluentd/config.d/spidamin.conf  
+curl -sS https://raw.githubusercontent.com/spidasoftware/installer/master/config/fluentd/suricata.conf > /etc/google-fluentd/config.d/suricata.conf  
+curl -sS https://raw.githubusercontent.com/spidasoftware/installer/master/config/logrotate/auditd > /etc/logrotate.d/auditd  
+curl -sS https://raw.githubusercontent.com/spidasoftware/installer/master/config/fluentd/auth.conf > /etc/google-fluentd/config.d/auth.conf
+curl -sS https://raw.githubusercontent.com/spidasoftware/installer/master/config/oinkmaster.conf > /etc/oinkmaster.conf  
+curl -sS https://raw.githubusercontent.com/spidasoftware/installer/master/config/suricata/rules/local.rules > /etc/suricata/rules/local.rules  
+curl -sS https://raw.githubusercontent.com/spidasoftware/installer/master/config/suricata/suricata.yaml > /etc/suricata/suricata.yaml  
+
+if ifconfig | grep -q ^eth0; then
+	sudo sed -i 's/ens4/eth0/g' /etc/suricata/suricata.yaml
+fi
+
+augenrules  
+service auditd restart  
+service suricata restart  
+service google-fluentd restart  
