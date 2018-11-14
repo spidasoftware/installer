@@ -15,9 +15,9 @@
 LOG_FILE=/var/log/clamav/clamav.log
 tail -F $LOG_FILE | while read LOG_LINE
 do
-    if [[ "${LOG_LINE}" == *"ScanOnAccess:"*"FOUND" ]]; then
-        BAD_FILE=$(echo "$LOG_LINE" | sed 's/\(.*\) -> ScanOnAccess: \(.*\):\(.*\)\((.*\):\(.*\) FOUND/\2/')
-        VIRUS_TYPE=$(echo "$LOG_LINE" | sed 's/\(.*\) -> ScanOnAccess: \(.*\):\(.*\)\((.*\):\(.*\) FOUND/\3/')
+    if [[ "${LOG_LINE}" == *"FOUND" ]]; then
+        BAD_FILE=$(echo "$LOG_LINE" | sed 's/\(.*\) -> \(.*\):\(.*\)\((.*\):\(.*\) FOUND/\2/')
+        VIRUS_TYPE=$(echo "$LOG_LINE" | sed 's/\(.*\) -> \(.*\):\(.*\)\((.*\):\(.*\) FOUND/\3/')
 
         if [ -e "$BAD_FILE" ]; then
             echo "BAD_FILE: $BAD_FILE"

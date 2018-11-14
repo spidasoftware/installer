@@ -1,4 +1,7 @@
+#!/bin/bash
+
 LAST_HASH=""
+
 inotifywait -m -r -e close_write --format '%w%f' --exclude \.git /apps/spidamin/files/ | while read FILE_PATH 
 do 
     if [ -f "$FILE_PATH" ]; then #check if file (not a dir)
