@@ -1,0 +1,1 @@
+clamdscan /apps/spidamin/files/
