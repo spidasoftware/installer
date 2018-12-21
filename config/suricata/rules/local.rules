@@ -1,8 +1,8 @@
 #Allow Google specific communication
 #SIDs start at 99800
 pass tcp $HOME_NET any -> 169.254.169.254 80 (msg: "Allow Google Metadata"; sid: 99801;)
-pass udp $HOME_NET any -> 169.254.169.254 123 (msg: "Allow Google Metadata"; sid: 99802;)
-pass udp 169.254.169.254 123 -> $HOME_NET any (msg: "Allow Google Metadata"; sid: 99803;)
+pass udp $HOME_NET any -> 169.254.169.254 [123,67] (msg: "Allow Google Metadata"; sid: 99802;)
+pass udp 169.254.169.254 [123,67] -> $HOME_NET any (msg: "Allow Google Metadata"; sid: 99803;)
 
 #Nothing other than SSH and HTTP(S) should be coming in out
 #Nothing other than DNS, mail, and HTTP(S) should be going out
