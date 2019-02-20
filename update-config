@@ -7,6 +7,7 @@ curl -sS https://raw.githubusercontent.com/spidasoftware/installer/master/config
 curl -sS https://raw.githubusercontent.com/spidasoftware/installer/master/config/fluentd/spidamin.conf > /etc/google-fluentd/config.d/spidamin.conf  
 curl -sS https://raw.githubusercontent.com/spidasoftware/installer/master/config/fluentd/suricata.conf > /etc/google-fluentd/config.d/suricata.conf  
 curl -sS https://raw.githubusercontent.com/spidasoftware/installer/master/config/logrotate/auditd > /etc/logrotate.d/auditd  
+curl -sS https://raw.githubusercontent.com/spidasoftware/installer/master/config/logrotate/suricata > /etc/logrotate.d/suricata  
 curl -sS https://raw.githubusercontent.com/spidasoftware/installer/master/config/fluentd/auth.conf > /etc/google-fluentd/config.d/auth.conf
 curl -sS https://raw.githubusercontent.com/spidasoftware/installer/master/config/oinkmaster.conf > /etc/oinkmaster.conf  
 curl -sS https://raw.githubusercontent.com/spidasoftware/installer/master/config/suricata/rules/local.rules > /etc/suricata/rules/local.rules  
