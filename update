@@ -6,6 +6,7 @@
 dockerUsername=""
 dockerPassword=""
 dockerComposeFile=/etc/spida/docker-compose.yml
+trustFlag=""
 
 ####################################################################################
 # Parses Args
@@ -17,6 +18,7 @@ function parseCommandLineArguments() {
           --username)  dockerUsername="$2"; shift;;
           --password)  dockerPassword="$2"; shift;;
           --composefile)  dockerComposeFile="$2"; shift;;
+          --disableTrust) trustFlag="$2"; shift;;
 
           *)
               echo >&2 \
@@ -25,6 +27,7 @@ function parseCommandLineArguments() {
                   --username          dockerhub username (will prompt for username if argument is not passed)
                   --password          dockerhub password (will prompt for password if argument is not passed)
                   --composefile       the location of the docker compose file (defaults to $dockerComposeFile)
+                  --disableTrust      check if docker container is signed (defaults to true)
               "
               exit 1;;
           *)  break;; # terminate while loop
@@ -55,15 +58,30 @@ function dockerLogin() {
   
 }
 
+####################################################################################
+# Sets local trustFlag variable to true if empty. 
+####################################################################################
+function setTrustFlag() {
+  if [[ "$trustFlag" = "" ]]; then
+    $trustFlag="true"
+  fi
+}
+
 parseCommandLineArguments $@
 dockerLogin
+setTrustFlag
 
 echo "stopping docker containers..."
 sudo docker-compose -f $dockerComposeFile stop
 echo "removing old docker containers..."
 sudo docker-compose -f $dockerComposeFile rm --force
 echo "updating docker containers..."
-sudo docker-compose -f $dockerComposeFile pull
+sudo docker-compose -f $dockerComposeFile pull --disable-content-trust=$trustFlag
+if [ $? -ne 0 ]; then
+    echo "Docker pull failed, exiting."
+    echo "$?"
+    exit 1
+fi
 echo "starting new docker containers..."
 sudo docker-compose -f $dockerComposeFile up -d
 echo "removing old docker images"
