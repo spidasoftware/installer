@@ -242,13 +242,14 @@ function createDockerComposeFile() {
   postgresBackupDir="${backupDir}/postgresBackups"
   mongoBackupDir="${backupDir}/mongoBackups"
   mongoDataDir="${backupDir}/mongoData"
+  mongoLogDir="${backupDir}/logs/mongodb"
   postgresDataDir="${backupDir}/postgresData"
   apachessl="${backupDir}/apachessl"
   geoserver="${backupDir}/geoserver"
   tomcatLogs="${backupDir}/logs/tomcat"
   spidaLogs="${backupDir}/logs/spida"
   apacheLogs="${backupDir}/logs/apache"
-  mkdir -p $filesDir $postgresBackupDir $mongoBackupDir $mongoDataDir $postgresDataDir $apachessl $geoserver $tomcatLogs $spidaLogs $apacheLogs
+  mkdir -p $filesDir $postgresBackupDir $mongoBackupDir $mongoDataDir $mongoLogDir $postgresDataDir $apachessl $geoserver $tomcatLogs $spidaLogs $apacheLogs
 
   HOST_MACHINE_HOST_NAME=`hostname -f`
   if [[ $spidaMin = true ]]; then
@@ -309,7 +310,8 @@ function createDockerComposeFile() {
   hostname: $MONGODB_HOSTNAME
   volumes:
     - $mongoBackupDir:/backups
-    - $mongoDataDir:/data/db" >> $dockerComposeFile
+    - $mongoDataDir:/data/db
+    - $mongoLogDir:/var/log/mongodb" >> $dockerComposeFile
       if [[ $needEnvFile = true ]]; then
         echo "  env_file: $dockerEnvFile" >> $dockerComposeFile
       fi
