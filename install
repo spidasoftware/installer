@@ -320,7 +320,7 @@ function createDockerComposeFile() {
     fi
     if [[ "$mongodOpts" != "" ]]; then
       echo "  environment:
-    - $mongodOpts" >> $dockerComposeFile
+    - MONGOD_OPTS=$mongodOpts" >> $dockerComposeFile
     fi
   fi
 
