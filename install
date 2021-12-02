@@ -10,6 +10,7 @@ dockerUsername=""
 dockerPassword=""
 databasePassword=""
 mongoPassword=""
+mongodOpts=""
 tomcatAdminPassword=""
 defaultUserPassword=""
 samlPassword=""
@@ -57,6 +58,7 @@ function parseCommandLineArguments() {
           --configdir)  configDir="$2"; shift;;
           --dbpassword)  databasePassword="$2"; shift;;
           --mongopassword)  mongoPassword="$2"; shift;;
+          --mongodopts)  mongodOpts="$2"; shift;;
           --tomcatpassword)  tomcatAdminPassword="$2"; shift;;
           --userpassword)  defaultUserPassword="$2"; shift;;
           --samlpassword)  samlPassword="$2"; shift;;
@@ -86,6 +88,7 @@ function parseCommandLineArguments() {
                   --configdir           directory for configuration and scripts (defaults to $configDir).
                   --dbpassword          database password
                   --mongopassword       mongodb password
+                  --mongodopts          mongod options
                   --tomcatpassword      tomcat admin password
                   --userpassword        default spidamin user password
                   --samlpassword        saml keystore password
@@ -312,9 +315,13 @@ function createDockerComposeFile() {
     - $mongoBackupDir:/backups
     - $mongoDataDir:/data/db
     - $mongoLogDir:/var/log/mongodb" >> $dockerComposeFile
-      if [[ $needEnvFile = true ]]; then
-        echo "  env_file: $dockerEnvFile" >> $dockerComposeFile
-      fi
+    if [[ $needEnvFile = true ]]; then
+      echo "  env_file: $dockerEnvFile" >> $dockerComposeFile
+    fi
+    if [[ "$mongodOpts" != "" ]]; then
+      echo "  environment:
+    - MONGOD_OPTS=$mongodOpts" >> $dockerComposeFile
+    fi
   fi
 
   if [[ $spidaMin = true ]]; then
