@@ -32,6 +32,7 @@ Argument            | Description
 --configdir         | directory for configuration files (defaults to /etc/spida)
 --dbpassword        | database password
 --mongopassword     | mongodb password
+--mongodopts        | mongod options
 --tomcatpassword    | tomcat admin password
 --userpassword      | default spidamin user password
 --no-spidamin       | don't install spidamin (if databases and SPIDAMin are on different machines)
@@ -81,6 +82,7 @@ ENV Name: description (default)
 * `MONGODB_DATABASE`: the database name inside of mongodb (spidadb)
 * `MONGODB_HOST`: the host where the mongodb is hosted (mongo)
 * `MONGODB_PORT`: the port mongodb is running on (27017)
+* `MONGOD_OPTS`: options to pass to mongod
 * `TOMCAT_PASSWORD`: password for tomcat manager web application
 * `TOMCAT_MAX_MEMORY_MB`: max memory for the tomcat image (4096)
 * `DEFAULT_PHASE_NAME`: default phase name for event phases (Open)
