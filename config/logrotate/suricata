@@ -1,4 +1,5 @@
-/var/log/suricata/eve.json /var/log/suricata/stats.log /var/log/suricata/fast.log {
+/var/log/suricata/*.log /var/log/suricata/*.json
+{
 	rotate 4
 	missingok
 	weekly
