@@ -36,6 +36,8 @@ APACHE_TAG_PASSED=false
 defaultApacheApp=""
 sendgridApiKey=""
 alertEmail=""
+interchangeCookieName=""
+interchangeCookieSecret=""
 
 ####################################################################################
 #
@@ -58,6 +60,8 @@ function parseCommandLineArguments() {
           --configdir)  configDir="$2"; shift;;
           --dbpassword)  databasePassword="$2"; shift;;
           --mongopassword)  mongoPassword="$2"; shift;;
+	  --interchangecookiesecret) interchangeCookieSecret="$2";shift;;
+	  --interchangecookiename) interchangeCookieName="$2";shift;;
           --mongodopts)  mongodOpts="$2"; shift;;
           --tomcatpassword)  tomcatAdminPassword="$2"; shift;;
           --userpassword)  defaultUserPassword="$2"; shift;;
@@ -436,6 +440,16 @@ function updateDockerComposeFile() {
   if [[ -n "$samlPassword" ]]; then
     sed -i "/SAML_PASSWORD=\S*$/d" $dockerEnvFile
       echo "SAML_PASSWORD=${samlPassword}" >> $dockerEnvFile
+  fi
+  if [[ -n "$interchangeCookieName" ]]; then
+      echo "INTERCHANGE_TOKEN_NAME=${interchangeCookieName}" >> $dockerEnvFile
+  else
+      echo 'INTERCHANGE_TOKEN_NAME=""' >> $dockerEnvFile
+  fi
+  if [[ -n "$interchangeCookieSecret" ]]; then
+      echo "INTERCHANGE_CS=${interchangeCookieSecret}" >> $dockerEnvFile
+  else
+      echo 'INTERCHANGE_COOKIE_SECRET=""' >> $dockerEnvFile
   fi
 
   unset dockerEnvFile
