@@ -443,13 +443,9 @@ function updateDockerComposeFile() {
   fi
   if [[ -n "$interchangeCookieName" ]]; then
       echo "INTERCHANGE_TOKEN_NAME=${interchangeCookieName}" >> $dockerEnvFile
-  else
-      echo 'INTERCHANGE_TOKEN_NAME=""' >> $dockerEnvFile
   fi
   if [[ -n "$interchangeCookieSecret" ]]; then
       echo "INTERCHANGE_CS=${interchangeCookieSecret}" >> $dockerEnvFile
-  else
-      echo 'INTERCHANGE_COOKIE_SECRET=""' >> $dockerEnvFile
   fi
 
   unset dockerEnvFile
