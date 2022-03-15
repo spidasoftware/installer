@@ -67,8 +67,8 @@ function parseCommandLineArguments() {
           --no-postgresql)  postgresql=false;;
           --no-mongodb)  mongo=false;;
           --no-start) dockerStart=false;;
-    		  --has-docker) hasDockerConfig=true;;
-    		  --disable-countdown) disableCountdown=true;;
+          --has-docker) hasDockerConfig=true;;
+          --disable-countdown) disableCountdown=true;;
           --default-apache-app)  defaultApacheApp="$2"; shift;;
           --sendgrid-api-key) sendgridApiKey="$2"; shift;;
           --alert-email) alertEmail="$2"; shift;;
@@ -95,9 +95,9 @@ function parseCommandLineArguments() {
                   --no-spidamin         don't install spidamin
                   --no-postgresql       don't install postgresql
                   --no-mongodb          don't install mongodb
-				          --no-start            don't start any docker containers
-				          --has-docker          look for existing docker-compose.yml
-				          --disable-countdown   turn off countdown jobs
+                  --no-start            don't start any docker containers
+                  --has-docker          look for existing docker-compose.yml
+                  --disable-countdown   turn off countdown jobs
                   --default-apache-app  default apache app to redirect to (defaults to projectmanager)
                   --sendgrid-api-key)   sendgrid apikey that will be used to send emails when there is an error in a cron backup job
                   --alert-email)        email address to send alerts to when a backup job fails
@@ -226,9 +226,9 @@ function createDockerComposeFile() {
     if [[ -n "$defaulUserApiToken" ]]; then
       echo "ADMIN_API_TOKEN=$defaulUserApiToken" >> $dockerEnvFile
     fi
-  	if [[ -n "$disableCountdown" ]]; then
-  	  echo "COUNTDOWN_DISABLED='true'" >> $dockerEnvFile
-  	fi
+    if [[ $disableCountdown = true ]]; then
+      echo "COUNTDOWN_DISABLED=true" >> $dockerEnvFile
+    fi
     if [[ -n "$sendgridApiKey" ]]; then
       echo "BACKUP_JOBS_SENDGRID_API_KEY=${sendgridApiKey}" >> $dockerEnvFile
     fi
@@ -365,7 +365,7 @@ function updateDockerComposeFile() {
   dockerEnvFile=$configDir/.docker-common.env
   sed -i '/COUNTDOWN_DISABLED/d' $dockerEnvFile
   if [[ $disableCountdown = true ]]; then
-    echo "COUNTDOWN_DISABLED='true'" >> $dockerEnvFile
+    echo "COUNTDOWN_DISABLED=true" >> $dockerEnvFile
   fi
 
   # Update the server root and the host machine
@@ -467,7 +467,7 @@ installDocker
 dockerLogin
 if [ $hasDockerConfig = false -o ! \( -f $configDir/docker-compose.yml -a -f $configDir/.docker-common.env \) ]; then
   updatePasswords=false
-	createDockerComposeFile
+  createDockerComposeFile
 else
   updateDockerComposeFile
   updatePasswords=true
@@ -483,11 +483,11 @@ if [ $updatePasswords = true ] && [ $postgresql = true ]; then
 fi
 
 if [ $dockerStart = true ]; then
-	sudo docker-compose -f $dockerComposeFile up -d
+  sudo docker-compose -f $dockerComposeFile up -d
 else
   if [ $updatePasswords = true ]; then
     sudo docker-compose -f $dockerComposeFile down
   fi
-	sudo docker-compose -f $dockerComposeFile pull
+  sudo docker-compose -f $dockerComposeFile pull
 fi
 sudo docker logout
