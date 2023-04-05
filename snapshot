@@ -3,7 +3,8 @@
 # This script takes snapshots of the files/data directory on google cloud instances
 
 # To setup as a cron job:
-# 0 9 * * * /var/lib/spida/snapshot.sh $DISK_NAME $EMAIL $CLIENT_NAME $ENVIRONMENT $PRODUCT $ZONE
+# 0 9 * * * /apps/spidamin/spida/disk-snapshot.sh $DISK_NAME $EMAIL $CLIENT_NAME $ENVIRONMENT $PRODUCT $ZONE
+# create.sh script uses disk-snapshot.sh as the file name (instead of snapshot.sh) when storing the script on new instances
 
 DT=`date +%Y%m%d`
 DT2=`date -d'-1 week' +%Y%m%d`
