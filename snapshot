@@ -3,30 +3,32 @@
 # This script takes snapshots of the files/data directory on google cloud instances
 
 # To setup as a cron job:
-# 0 9 * * * /var/lib/spida/snapshot.sh $disk-id
+# 0 9 * * * /var/lib/spida/snapshot.sh $DISK_NAME $EMAIL $CLIENT_NAME $ENVIRONMENT $PRODUCT $ZONE
 
 DT=`date +%Y%m%d`
 DT2=`date -d'-1 week' +%Y%m%d`
-name="$1"
-email="$2"
-zone="$3"
-if [[ "$zone" = "" ]]; then
-	zone="us-central1-a"
+DISK_NAME="$1"
+EMAIL="$2"
+CLIENT_NAME="$3"
+ENVIRONMENT="$4"
+PRODUCT="$5"
+ZONE="$6"
+if [[ "$ZONE" = "" ]]; then
+	ZONE="us-central1-a"
 fi
 
 sudo sync
 sudo fsfreeze -f /apps/spidamin
-std_err=$(gcloud compute disks snapshot $name --snapshot-names $name-v$DT --zone $zone 2>&1 > /dev/null)
+std_err=$(gcloud compute disks snapshot $DISK_NAME --snapshot-names $DISK_NAME-v$DT --zone $ZONE --labels=client=$CLIENT_NAME,env=$ENVIRONMENT,product=$PRODUCT 2>&1 > /dev/null)
 if [[ $? -ne 0 ]]; then
-        echo "error creating disk snapshot on $(hostname): $std_err" | mailx -s "$(hostname) gcloud disk snapshot error" "$email"
+        echo "error creating disk snapshot on $(hostname): $std_err" | mailx -s "$(hostname) gcloud disk snapshot error" "$EMAIL"
 fi
 sudo fsfreeze -u /apps/spidamin
-std_err=$(gcloud compute snapshots list --filter="name=('$name-v$DT2')" 2>&1 > /dev/null)
+std_err=$(gcloud compute snapshots list --filter="name=('$DISK_NAME-v$DT2')" 2>&1 > /dev/null)
 # If the list command doesn't return a snapshot, then stderr is "Listed 0 items." and the exit code is 0 
 if [[ "$std_err" == "" ]]; then
-	std_err=$(gcloud compute snapshots delete $name-v$DT2 -q 2>&1 > /dev/null)
+	std_err=$(gcloud compute snapshots delete $DISK_NAME-v$DT2 -q 2>&1 > /dev/null)
 	if [[ $? -ne 0 ]]; then
-		echo "error deleting disk snapshot on $(hostname): $std_err" | mailx -s "$(hostname) gcloud disk snapshot error" "$email"
+		echo "error deleting disk snapshot on $(hostname): $std_err" | mailx -s "$(hostname) gcloud disk snapshot error" "$EMAIL"
 	fi
 fi
-
