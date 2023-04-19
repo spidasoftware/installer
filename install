@@ -155,9 +155,34 @@ waitForService() {
 #
 ####################################################################################
 function installDocker() {
-  curl -sSL https://get.docker.com/ | sh
-  curl -L https://github.com/docker/compose/releases/download/1.7.0/docker-compose-`uname -s`-`uname -m` > /usr/bin/docker-compose
-  chmod +x /usr/bin/docker-compose
+  #Steps Copied From https://docs.docker.com/engine/install/ubuntu/
+
+  # Setup apt repository and keyring
+  # Step 1
+  sudo apt-get update
+  sudo apt-get install \
+      ca-certificates \
+      curl \
+      gnupg
+
+  # Step 2
+  sudo install -m 0755 -d /etc/apt/keyrings
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+  # Step 3
+  echo \
+    "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+    "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+  # Install Docker Client
+  # Step 1
+  sudo apt-get update
+
+  # Step 2 (Installs Latest Docker Version Available to the Repo w/ compatible compose)
+  sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+
   if [[ -f "/etc/redhat-release" ]]; then
     sudo mkdir /etc/systemd/system/docker.service.d
     sudo touch /etc/systemd/system/docker.service.d/docker.conf

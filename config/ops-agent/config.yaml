@@ -57,4 +57,3 @@ logging:
     pipelines:
       default_pipeline:
         receivers: [Spida_Studio, Spida_Studio_Perf, Mongo, Suricata, ClamAV, Audit]
-        
