@@ -1,0 +1,64 @@
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# <== Enter custom agent configurations in this file.
+# See https://cloud.google.com/stackdriver/docs/solutions/agents/ops-agent/configuration
+# for more details.
+
+logging:
+  receivers:
+    Spida_Studio:
+      type: files
+      include_paths:
+      - /apps/spidamin/logs/spida/*.log
+      exclude_paths:
+      - /apps/spidamin/logs/spida/*[0-9]*
+      - /apps/spidamin/logs/spida/*performance*
+      record_log_file_path: true
+    Tomcat:
+      type: files
+      include_paths: 
+      - /apps/spidamin/logs/tomcat/catalina.out
+      record_log_file_path: true
+    Spida_Studio_Perf:
+      type: files
+      include_paths:
+      - /apps/spidamin/logs/spida/*performance*
+      exclude_paths:
+      - /apps/spidamin/logs/spida/*[0-9]*
+      record_log_file_path: true
+    Mongo:
+      type: files
+      include_paths:
+      - /apps/spidamin/logs/mongodb
+      exclude_paths:
+      - /apps/spidamin/logs/spida/*[0-9]*
+      record_log_file_path: true
+    Suricata:
+      type: files
+      include_paths:
+      - /var/log/suricata/suricata.log
+      - /var/log/suricata/eve.json
+      - /var/log/suricata/stats.log
+      - /var/log/suricata/fast.log
+      record_log_file_path: true
+    ClamAV:
+      type: files
+      include_paths:
+      - /var/log/clamav/clamav.log
+      record_log_file_path: true
+    Audit:
+      type: files
+      include_paths:
+      - /var/log/audit/audit.log
+      record_log_file_path: true
+  service:
+    pipelines:
+      default_pipeline:
+        receivers: [Spida_Studio, Spida_Studio_Perf, Mongo, Suricata, ClamAV, Audit]
