@@ -21,6 +21,11 @@ logging:
       - /apps/spidamin/logs/spida/*[0-9]*
       - /apps/spidamin/logs/spida/*performance*
       record_log_file_path: true
+    Tomcat:
+      type: files
+      include_paths: 
+      - /apps/spidamin/logs/tomcat/catalina.out
+      record_log_file_path: true
     Spida_Studio_Perf:
       type: files
       include_paths:
