@@ -36,7 +36,7 @@ logging:
     Mongo:
       type: files
       include_paths:
-      - /apps/spidamin/logs/mongodb
+      - /apps/spidamin/logs/mongodb/*.log
       exclude_paths:
       - /apps/spidamin/logs/spida/*[0-9]*
       record_log_file_path: true
