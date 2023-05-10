@@ -60,8 +60,8 @@ function parseCommandLineArguments() {
           --configdir)  configDir="$2"; shift;;
           --dbpassword)  databasePassword="$2"; shift;;
           --mongopassword)  mongoPassword="$2"; shift;;
-	        --interchangecookiesecret) interchangeCookieSecret="$2";shift;;
-	        --interchangecookiename) interchangeCookieName="$2";shift;;
+	  --interchangecookiesecret) interchangeCookieSecret="$2";shift;;
+	  --interchangecookiename) interchangeCookieName="$2";shift;;
           --mongodopts)  mongodOpts="$2"; shift;;
           --tomcatpassword)  tomcatAdminPassword="$2"; shift;;
           --userpassword)  defaultUserPassword="$2"; shift;;
