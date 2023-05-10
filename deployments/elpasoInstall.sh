@@ -278,7 +278,7 @@ function createDockerComposeFile() {
   postgresDataDir="${backupDir}/postgresData"
   apachessl="${backupDir}/apachessl"
   geoserver="${backupDir}/geoserver"
-  ssl="${backupDir}/ssl"
+  tomcatssl="${backupDir}/ssl"
   tomcatLogs="${backupDir}/logs/tomcat"
   spidaLogs="${backupDir}/logs/spida"
   apacheLogs="${backupDir}/logs/apache"
@@ -292,7 +292,7 @@ function createDockerComposeFile() {
   volumes:
     - $filesDir:/var/lib/spida/files
     - $geoserver:/var/lib/spida/geoserver
-    - $ssl:/var/lib/spida/ssl
+    - $tomcatssl:/var/lib/spida/ssl
     - $tomcatLogs:/usr/local/tomcat/logs
     - $spidaLogs:/var/lib/spida/logs
   environment:
