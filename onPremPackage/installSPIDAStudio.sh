@@ -7,8 +7,7 @@ source spidaInstall.conf
 if [[ -f ${CONTAINER_PACKAGE} ]];then
   docker load -i "${CONTAINER_PACKAGE}"
 else
-  echo "Container package not found at ${CONTAINER_PACKAGE}!"
-  exit 1;
+  echo "No container package found locally. If this is unexpected please check the 'CONTAINER_PACKAGE' configuration."
 fi
 
 # Containers to Install
@@ -122,4 +121,4 @@ if [[ $TCAT_JAVA_MAX_MEM ]];then
 fi
 
 # Install Command
-./genericInstall.sh "$CONTAINERS $TAGS $MONGO $SQLDB $SPIDA $ADMIN $MISC"
+./genericInstall.sh $CONTAINERS $TAGS $MONGO $SQLDB $SPIDA $ADMIN $MISC

@@ -168,8 +168,9 @@ function parseCommandLineArguments() {
   done
 
   if [[ ! -d "$backupDir" ]]; then
-    echo "$backupDir does not exist, exiting"
-    exit 1
+    echo "$backupDir does not exist, creating"
+    mkdir -p "$backupDir/spida"
+    echo "Done..."
   fi
 
   echo "--------------------------------------------------------------------------------------"
@@ -244,7 +245,7 @@ function dockerLogin() {
   	read -r -s -p "Docker password: " dockerPassword
   fi
 
-  sudo docker login -u "$dockerUsername" -p "$dockerPassword"
+  docker login -u "$dockerUsername" -p "$dockerPassword"
 
   if [ $? -ne 0 ]; then
     echo "login failed, exiting."
@@ -374,10 +375,10 @@ function createDockerComposeFile() {
     samlDir="${backupDir}/saml"
   fi
 
-  mkdir -p "$filesDir $spidaLogs $tomcatLogs $tomcatssl $geoserver $samlDir \
+  mkdir -p $filesDir $spidaLogs $tomcatLogs $tomcatssl $geoserver $samlDir \
   $mongoBackupDir $mongoDataDir $mongoLogDir \
   $apachessl $apacheLogs \
-  $postgresBackupDir $postgresDataDir"
+  $postgresBackupDir $postgresDataDir
 
   HOST_MACHINE_HOST_NAME=$(hostname -f)
 
@@ -467,10 +468,10 @@ function createDockerComposeFile() {
         - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME" >> "$dockerComposeFile"
 
         if [[ "$serverRoot" != "" ]]; then
-          echo "    - SERVER_ROOT=$serverRoot" >> "$dockerComposeFile"
+          echo "      - SERVER_ROOT=$serverRoot" >> "$dockerComposeFile"
         fi
         if [[ "$defaultApacheApp" != "" ]]; then
-          echo "    - DEFAULT_APP_NAME=$defaultApacheApp" >> "$dockerComposeFile"
+          echo "      - DEFAULT_APP_NAME=$defaultApacheApp" >> "$dockerComposeFile"
         fi
   fi
 }
