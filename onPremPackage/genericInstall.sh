@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Source Company File
-source company.conf
+source conf/company.conf
 
 ####################################################################################
 #
@@ -143,14 +143,24 @@ function parseCommandLineArguments() {
                   --docker-password     dockerhub password (will prompt for password if argument is not passed)
                   --server-root         server root that you will navigate to view the application (ex: min.com)
                   --backupdir           directory for mongo data, postgres data, files and backups (defaults to $backupDir). This has to be backed up.
+                  --db-conn-str         database connection string if using external
+                  --db-driver           database driver if using non-postgresql db
                   --db-password         database password
+                  --db-username         database user
                   --mongo-password      mongodb password
+                  --mongo-username      mongodb password
+                  --mongo-database      mongodb password
+                  --mongo-port          mongodb password
+                  --mongo-host          mongodb password
+                  --mongo-uri           mongodb password
                   --mongodopts          mongod options
                   --tomcat-password     tomcat admin password
                   --tomcat-memory       tomcat maximum heap size
-                  --user-password       default spidamin user password
+                  --admin-user-email    default spidamin user login
+                  --admin-user-password default spidamin user password
+                  --admin-api-token     default spidamin user password
                   --saml-alias          saml alias
-                  --samlpassword        saml keystore password
+                  --saml-password       saml keystore password
                   --no-apache           don't add apache container
                   --no-spidamin         don't add spidamin container
                   --no-postgresql       don't add postgresql container
@@ -161,6 +171,8 @@ function parseCommandLineArguments() {
                   --default-apache-app  default apache app to redirect to (defaults to projectmanager)
                   --sendgrid-api-key)   sendgrid apikey that will be used to send emails when there is an error in a cron backup job
                   --alert-email)        email address to send alerts to when a backup job fails
+                  --email-host)         email host (ex. host.smtp.com)
+                  --email-port)         email port
               "
               exit 1;;
       esac

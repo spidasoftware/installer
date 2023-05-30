@@ -2,7 +2,7 @@
 set -x
 
 # Installation Configuration File
-source spidaInstall.conf
+source conf/spidaInstall.conf
 
 if [[ -f ${CONTAINER_PACKAGE} ]];then
   docker load -i "${CONTAINER_PACKAGE}"
