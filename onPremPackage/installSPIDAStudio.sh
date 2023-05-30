@@ -122,3 +122,6 @@ fi
 
 # Install Command
 ./genericInstall.sh $CONTAINERS $TAGS $MONGO $SQLDB $SPIDA $ADMIN $MISC
+
+# Copy LaunchOrUpdate Script
+sudo mv launchOrRestartSPIDAStudio.sh "${APPLICATION_DIRECTORY}"/spida
