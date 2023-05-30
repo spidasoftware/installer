@@ -248,8 +248,7 @@ function dockerLogin() {
   docker login -u "$dockerUsername" -p "$dockerPassword"
 
   if [ $? -ne 0 ]; then
-    echo "login failed, exiting."
-    exit 1
+    echo "login failed, unable to connect to docker repository."
   fi
 }
 
