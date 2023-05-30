@@ -465,24 +465,24 @@ function createDockerComposeFile() {
 
   if [[ $apache = true ]]; then
         echo "apache:
-      image: spidasoftware/apache:$apacheTag
-      restart: always
-      links:
-        - spidamin
-      ports:
-        - \"80:80\"
-        - \"443:443\"
-      volumes:
-        - $apachessl:/var/lib/spida/apache_ssl
-        - $apacheLogs:/var/log/apache2
-      environment:
-        - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME" >> "$dockerComposeFile"
+  image: spidasoftware/apache:$apacheTag
+  restart: always
+  links:
+    - spidamin
+  ports:
+    - \"80:80\"
+    - \"443:443\"
+  volumes:
+    - $apachessl:/var/lib/spida/apache_ssl
+    - $apacheLogs:/var/log/apache2
+  environment:
+    - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME" >> "$dockerComposeFile"
 
         if [[ "$serverRoot" != "" ]]; then
-          echo "        - SERVER_ROOT=$serverRoot" >> "$dockerComposeFile"
+          echo "  - SERVER_ROOT=$serverRoot" >> "$dockerComposeFile"
         fi
         if [[ "$defaultApacheApp" != "" ]]; then
-          echo "        - DEFAULT_APP_NAME=$defaultApacheApp" >> "$dockerComposeFile"
+          echo "  - DEFAULT_APP_NAME=$defaultApacheApp" >> "$dockerComposeFile"
         fi
   fi
 }
