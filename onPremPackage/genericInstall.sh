@@ -479,10 +479,10 @@ function createDockerComposeFile() {
         - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME" >> "$dockerComposeFile"
 
         if [[ "$serverRoot" != "" ]]; then
-          echo "      - SERVER_ROOT=$serverRoot" >> "$dockerComposeFile"
+          echo "        - SERVER_ROOT=$serverRoot" >> "$dockerComposeFile"
         fi
         if [[ "$defaultApacheApp" != "" ]]; then
-          echo "      - DEFAULT_APP_NAME=$defaultApacheApp" >> "$dockerComposeFile"
+          echo "        - DEFAULT_APP_NAME=$defaultApacheApp" >> "$dockerComposeFile"
         fi
   fi
 }
