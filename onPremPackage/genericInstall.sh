@@ -58,6 +58,7 @@ mongo=true
 
 # Environment Descriptors
 hasDockerConfig=false
+disableDockerLogin=false
 
 # Application Installation Conf
 backupDir="/apps/spidamin"
@@ -124,6 +125,7 @@ function parseCommandLineArguments() {
           --no-mongodb)  mongo=false;;
           --no-start) dockerStart=false;;
           --has-docker) hasDockerConfig=true;;
+          --disable-dh-login) disableDockerLogin=true;;
           --disable-countdown) disableCountdown=true;;
           --default-apache-app)  defaultApacheApp="$2"; shift;;
           --sendgrid-api-key) sendgridApiKey="$2"; shift;;
@@ -167,6 +169,7 @@ function parseCommandLineArguments() {
                   --no-mongodb          don't add mongodb container
                   --no-start            don't start any docker containers on completion
                   --has-docker          look for existing docker-compose.yml
+                  --disable-dh-login    disableDockerLogin=true;;
                   --disable-countdown   turn off countdown jobs
                   --default-apache-app  default apache app to redirect to (defaults to projectmanager)
                   --sendgrid-api-key)   sendgrid apikey that will be used to send emails when there is an error in a cron backup job
@@ -261,6 +264,7 @@ function dockerLogin() {
 
   if [ $? -ne 0 ]; then
     echo "login failed, unable to connect to docker repository."
+    exit 1
   fi
 }
 
@@ -658,7 +662,11 @@ createEmptyLogs() {
 ####################################################################################
 parseCommandLineArguments "$@"
 dockerCheck
-dockerLogin
+if [ $disableDockerLogin = true ]; then
+  echo "Docker login disabled. Continuing..."
+else
+  dockerLogin
+fi
 
 if [ $hasDockerConfig = false -o ! \( -f "$appconfigDir"/docker-compose.yml -a -f "$appconfigDir"/.docker-common.env \) ]; then
   updatePasswords=false

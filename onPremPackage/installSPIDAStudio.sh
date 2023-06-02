@@ -8,6 +8,7 @@ if [[ -f ${CONTAINER_PACKAGE} ]];then
   docker load -i "${CONTAINER_PACKAGE}"
 else
   echo "No container package found locally. If this is unexpected please check the 'CONTAINER_PACKAGE' configuration."
+  DISABLE_DOCKER_LOGIN="--disable-dh-login "
 fi
 
 # Containers to Install
@@ -121,7 +122,7 @@ if [[ $TCAT_JAVA_MAX_MEM ]];then
 fi
 
 # Install Command
-./genericInstall.sh $CONTAINERS $TAGS $MONGO $SQLDB $SPIDA $ADMIN $MISC
+./genericInstall.sh $CONTAINERS $TAGS $MONGO $SQLDB $SPIDA $ADMIN $MISC $DISABLE_DOCKER_LOGIN
 
 # Copy LaunchOrUpdate Script
 sudo mv launchOrRestartSPIDAStudio.sh "${APPLICATION_DIRECTORY}"/spida
