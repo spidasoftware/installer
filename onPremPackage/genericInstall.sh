@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Source Company File
-source company.conf
+source conf/company.conf
 
 ####################################################################################
 #
@@ -58,6 +58,7 @@ mongo=true
 
 # Environment Descriptors
 hasDockerConfig=false
+disableDockerLogin=false
 
 # Application Installation Conf
 backupDir="/apps/spidamin"
@@ -124,6 +125,7 @@ function parseCommandLineArguments() {
           --no-mongodb)  mongo=false;;
           --no-start) dockerStart=false;;
           --has-docker) hasDockerConfig=true;;
+          --disable-dh-login) disableDockerLogin=true;;
           --disable-countdown) disableCountdown=true;;
           --default-apache-app)  defaultApacheApp="$2"; shift;;
           --sendgrid-api-key) sendgridApiKey="$2"; shift;;
@@ -143,24 +145,37 @@ function parseCommandLineArguments() {
                   --docker-password     dockerhub password (will prompt for password if argument is not passed)
                   --server-root         server root that you will navigate to view the application (ex: min.com)
                   --backupdir           directory for mongo data, postgres data, files and backups (defaults to $backupDir). This has to be backed up.
+                  --db-conn-str         database connection string if using external
+                  --db-driver           database driver if using non-postgresql db
                   --db-password         database password
+                  --db-username         database user
                   --mongo-password      mongodb password
+                  --mongo-username      mongodb password
+                  --mongo-database      mongodb password
+                  --mongo-port          mongodb password
+                  --mongo-host          mongodb password
+                  --mongo-uri           mongodb password
                   --mongodopts          mongod options
                   --tomcat-password     tomcat admin password
                   --tomcat-memory       tomcat maximum heap size
-                  --user-password       default spidamin user password
+                  --admin-user-email    default spidamin user login
+                  --admin-user-password default spidamin user password
+                  --admin-api-token     default spidamin user password
                   --saml-alias          saml alias
-                  --samlpassword        saml keystore password
+                  --saml-password       saml keystore password
                   --no-apache           don't add apache container
                   --no-spidamin         don't add spidamin container
                   --no-postgresql       don't add postgresql container
                   --no-mongodb          don't add mongodb container
                   --no-start            don't start any docker containers on completion
                   --has-docker          look for existing docker-compose.yml
+                  --disable-dh-login    disableDockerLogin=true;;
                   --disable-countdown   turn off countdown jobs
                   --default-apache-app  default apache app to redirect to (defaults to projectmanager)
                   --sendgrid-api-key)   sendgrid apikey that will be used to send emails when there is an error in a cron backup job
                   --alert-email)        email address to send alerts to when a backup job fails
+                  --email-host)         email host (ex. host.smtp.com)
+                  --email-port)         email port
               "
               exit 1;;
       esac
@@ -248,7 +263,7 @@ function dockerLogin() {
   docker login -u "$dockerUsername" -p "$dockerPassword"
 
   if [ $? -ne 0 ]; then
-    echo "login failed, exiting."
+    echo "login failed, unable to connect to docker repository. Exiting..."
     exit 1
   fi
 }
@@ -454,24 +469,24 @@ function createDockerComposeFile() {
 
   if [[ $apache = true ]]; then
         echo "apache:
-      image: spidasoftware/apache:$apacheTag
-      restart: always
-      links:
-        - spidamin
-      ports:
-        - \"80:80\"
-        - \"443:443\"
-      volumes:
-        - $apachessl:/var/lib/spida/apache_ssl
-        - $apacheLogs:/var/log/apache2
-      environment:
-        - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME" >> "$dockerComposeFile"
+  image: spidasoftware/apache:$apacheTag
+  restart: always
+  links:
+    - spidamin
+  ports:
+    - \"80:80\"
+    - \"443:443\"
+  volumes:
+    - $apachessl:/var/lib/spida/apache_ssl
+    - $apacheLogs:/var/log/apache2
+  environment:
+    - HOST_MACHINE_HOST_NAME=$HOST_MACHINE_HOST_NAME" >> "$dockerComposeFile"
 
         if [[ "$serverRoot" != "" ]]; then
-          echo "      - SERVER_ROOT=$serverRoot" >> "$dockerComposeFile"
+          echo "    - SERVER_ROOT=$serverRoot" >> "$dockerComposeFile"
         fi
         if [[ "$defaultApacheApp" != "" ]]; then
-          echo "      - DEFAULT_APP_NAME=$defaultApacheApp" >> "$dockerComposeFile"
+          echo "    - DEFAULT_APP_NAME=$defaultApacheApp" >> "$dockerComposeFile"
         fi
   fi
 }
@@ -647,7 +662,11 @@ createEmptyLogs() {
 ####################################################################################
 parseCommandLineArguments "$@"
 dockerCheck
-dockerLogin
+if [ $disableDockerLogin = true ]; then
+  echo "Docker login disabled. Continuing..."
+else
+  dockerLogin
+fi
 
 if [ $hasDockerConfig = false -o ! \( -f "$appconfigDir"/docker-compose.yml -a -f "$appconfigDir"/.docker-common.env \) ]; then
   updatePasswords=false
