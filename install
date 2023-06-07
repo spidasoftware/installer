@@ -38,6 +38,8 @@ sendgridApiKey=""
 alertEmail=""
 interchangeCookieName=""
 interchangeCookieSecret=""
+postgresBackupCron="30 10 * * *"
+mongoBackupCron="30 10 * * *"
 
 ####################################################################################
 #
@@ -266,6 +268,12 @@ function createDockerComposeFile() {
     fi
     if [[ -n "$samlPassword" ]]; then
       echo "SAML_PW=${samlPassword}" >> $dockerEnvFile
+    fi
+    if [[ $postgresql = true ]]; then
+      echo "POSTGRES_BACKUP_CRON=${postgresBackupCron}" >> $dockerEnvFile
+    fi
+    if [[ mongo = true ]]; then
+      echo "MONGO_BACKUP_CRON=${mongoBackupCron}" >> $dockerEnvFile
     fi
   fi
 
