@@ -83,8 +83,8 @@ ENV Name: description (default)
 * `MONGODB_HOST`: the host where the mongodb is hosted (mongo)
 * `MONGODB_PORT`: the port mongodb is running on (27017)
 * `MONGOD_OPTS`: options to pass to mongod
-* `TCAT_KEYSTORE_PATH`: the path including filename where the keystore is located (Note: Password is required)
-* `TCAT_KEYSTORE_PW`: the required password for the keystore defined in TCAT_KEYSTORE_PATH
+* `TOMCAT_KEYSTORE_PATH`: the path including filename where the keystore is located (Note: Password is required)
+* `TOMCAT_KEYSTORE_PW`: the required password for the keystore defined in TOMCAT_KEYSTORE_PATH
 * `TOMCAT_PASSWORD`: password for tomcat manager web application
 * `TOMCAT_MAX_MEMORY_MB`: max memory for the tomcat image (4096)
 * `DEFAULT_PHASE_NAME`: default phase name for event phases (Open)
