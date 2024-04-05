@@ -40,6 +40,12 @@ interchangeCookieName=""
 interchangeCookieSecret=""
 postgresBackupCron="30 10 * * *"
 mongoBackupCron="30 10 * * *"
+licenseDir="/var/lib/spida/license"
+licenseDeviceId=""
+productId=3337
+licenseAccessKey=""
+licenseEnvironment="RELEASE"
+licenseOfflineMode="false"
 
 ####################################################################################
 #
@@ -78,6 +84,12 @@ function parseCommandLineArguments() {
           --default-apache-app)  defaultApacheApp="$2"; shift;;
           --sendgrid-api-key) sendgridApiKey="$2"; shift;;
           --alert-email) alertEmail="$2"; shift;;
+          --licensedir) licenseDir="$2"; shift;;
+          --licenseenvironment) licenseEnvironment="$2"; shift;;
+          --licensedeviceid) licenseDeviceId="$2"; shift;;
+          --productid) productId="$2"; shift;;
+          --licenseaccesskey) licenseAccessKey="$2"; shift;;
+          --licenseofflinemode) licenseOfflineMode="$2"; shift;;
           *)
               echo >&2 \
               "usage: $0 [option value]
@@ -107,6 +119,12 @@ function parseCommandLineArguments() {
                   --default-apache-app  default apache app to redirect to (defaults to projectmanager)
                   --sendgrid-api-key)   sendgrid apikey that will be used to send emails when there is an error in a cron backup job
                   --alert-email)        email address to send alerts to when a backup job fails
+                  --licensedir
+                  --licenseenvironment
+                  --licensedeviceid
+                  --productid
+                  --licenseaccesskey
+                  --licenseofflinemode
               "
               exit 1;;
           *)  break;; # terminate while loop
@@ -274,6 +292,24 @@ function createDockerComposeFile() {
     fi
     if [[ mongo = true ]]; then
       echo "MONGO_BACKUP_CRON=${mongoBackupCron}" >> $dockerEnvFile
+    fi
+    if [[ -n "$licenseDir" ]]
+      echo "LICENSE_PATH=${licenseDir}" >> $dockerEnvFile
+    fi
+    if [[ -n "$licenseEnvironment" ]]
+      echo "LICENSE_ENVIRONMENT=${licenseEnvironment}" >> $dockerEnvFile
+    fi
+    if [[ -n "$licenseDeviceId" ]]
+      echo "LICENSE_DEVICE_ID=${licenseDeviceId}" >> $dockerEnvFile
+    fi
+    if [[ -n "$productId" ]]
+      echo "PRODUCT_ID=${productId}" >> $dockerEnvFile
+    fi
+    if [[ -n "$licenseAccessKey" ]]
+      echo "LICENSE_ACCESS_KEY=${licenseAccessKey}" >> $dockerEnvFile
+    fi
+    if [[ -n "$licenseOfflineMode" ]]
+      echo "LICENSE_OFFLINE_MODE=${licenseOfflineMode}" >> $dockerEnvFile
     fi
   fi
 
