@@ -42,7 +42,7 @@ postgresBackupCron="30 10 * * *"
 mongoBackupCron="30 10 * * *"
 licenseDir="/var/lib/spida/license"
 licenseDeviceId=""
-productId=3337
+productId="3337"
 licenseAccessKey=""
 licenseEnvironment="RELEASE"
 licenseOfflineMode="false"
@@ -293,22 +293,22 @@ function createDockerComposeFile() {
     if [[ mongo = true ]]; then
       echo "MONGO_BACKUP_CRON=${mongoBackupCron}" >> $dockerEnvFile
     fi
-    if [[ -n "$licenseDir" ]]
+    if [[ -n "$licenseDir" ]]; then
       echo "LICENSE_PATH=${licenseDir}" >> $dockerEnvFile
     fi
-    if [[ -n "$licenseEnvironment" ]]
+    if [[ -n "$licenseEnvironment" ]]; then
       echo "LICENSE_ENVIRONMENT=${licenseEnvironment}" >> $dockerEnvFile
     fi
-    if [[ -n "$licenseDeviceId" ]]
+    if [[ -n "$licenseDeviceId" ]]; then
       echo "LICENSE_DEVICE_ID=${licenseDeviceId}" >> $dockerEnvFile
     fi
-    if [[ -n "$productId" ]]
+    if [[ -n "$productId" ]]; then
       echo "PRODUCT_ID=${productId}" >> $dockerEnvFile
     fi
-    if [[ -n "$licenseAccessKey" ]]
+    if [[ -n "$licenseAccessKey" ]]; then
       echo "LICENSE_ACCESS_KEY=${licenseAccessKey}" >> $dockerEnvFile
     fi
-    if [[ -n "$licenseOfflineMode" ]]
+    if [[ -n "$licenseOfflineMode" ]]; then
       echo "LICENSE_OFFLINE_MODE=${licenseOfflineMode}" >> $dockerEnvFile
     fi
   fi
