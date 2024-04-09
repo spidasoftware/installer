@@ -119,12 +119,12 @@ function parseCommandLineArguments() {
                   --default-apache-app  default apache app to redirect to (defaults to projectmanager)
                   --sendgrid-api-key)   sendgrid apikey that will be used to send emails when there is an error in a cron backup job
                   --alert-email)        email address to send alerts to when a backup job fails
-                  --licensedir
-                  --licenseenvironment
-                  --licensedeviceid
-                  --productid
-                  --licenseaccesskey
-                  --licenseofflinemode
+                  --licensedir          directory for license executable and x-platform directory to initialize license checker
+                  --licenseenvironment  assigned environment type of the server for license purposes
+                  --licensedeviceid     name of the device hosting the server
+                  --productid           id of the product being installed
+                  --licenseaccesskey    accesskey for server licensing
+                  --licenseofflinemode  start server in offline mode
               "
               exit 1;;
           *)  break;; # terminate while loop
