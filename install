@@ -120,7 +120,7 @@ function parseCommandLineArguments() {
                   --sendgrid-api-key)   sendgrid apikey that will be used to send emails when there is an error in a cron backup job
                   --alert-email)        email address to send alerts to when a backup job fails
                   --licensedir          directory for license executable and x-platform directory to initialize license checker
-                  --licenseenvironment  assigned environment type of the server for license purposes
+                  --licenseenvironment  assigned environment type of the server for license purposes. Options are QA, RELEASE, DEV
                   --licensedeviceid     name of the device hosting the server
                   --productid           id of the product being installed
                   --licenseaccesskey    accesskey for server licensing
