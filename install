@@ -308,7 +308,7 @@ function createDockerComposeFile() {
     if [[ -n "$licenseAccessKey" ]]; then
       echo "LICENSE_ACCESS_KEY=${licenseAccessKey}" >> $dockerEnvFile
     fi
-    if [[ -n "$licenseOfflineMode" ]]; then
+    if [[ $licenseOfflineMode = true ]]; then
       echo "LICENSE_OFFLINE_MODE=${licenseOfflineMode}" >> $dockerEnvFile
     fi
   fi
