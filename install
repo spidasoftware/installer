@@ -366,10 +366,19 @@ function createDockerComposeFile() {
   image: spidasoftware/redis:$redisTag
   restart: always" >> $dockerComposeFile
 
+    echo "proxy:
+  image: spidasoftware/spida-proxy:latest
+  restart: always
+  volumes:
+    - /apps/spidamin/logs/proxy:/logs
+  links:
+    - spidamin" >> $dockerComposeFile
+
     echo "apache:
   image: spidasoftware/apache:$apacheTag
   restart: always
   links:
+    - proxy
     - spidamin
   ports:
     - \"80:80\"
