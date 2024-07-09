@@ -379,7 +379,6 @@ function createDockerComposeFile() {
   restart: always
   links:
     - proxy
-    - spidamin
   ports:
     - \"80:80\"
     - \"443:443\"
