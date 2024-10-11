@@ -63,7 +63,7 @@ function dockerLogin() {
 #
 # parse arguments
 #
-parseCommandLineArguments $@
+parseCommandLineArguments "$@"
 
 #
 # update the docker containers
