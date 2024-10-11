@@ -1,22 +1,28 @@
 #!/bin/bash
 
-####################################################################################
-# Vars
-####################################################################################
+#
+# Update docker images on an instance.
+#
+
+#
+# vars
+#
 dockerUsername=""
 dockerPassword=""
 dockerComposeFile=/etc/spida/docker-compose.yml
+dockerContainers=""
 
-####################################################################################
-# Parses Args
-####################################################################################
+#
+# parses args
+#
 function parseCommandLineArguments() {
   while [ $# -gt 0 ]
   do
       case "$1" in
-          --username)  dockerUsername="$2"; shift;;
-          --password)  dockerPassword="$2"; shift;;
-          --composefile)  dockerComposeFile="$2"; shift;;
+          --username) dockerUsername="$2"; shift;;
+          --password) dockerPassword="$2"; shift;;
+          --composefile) dockerComposeFile="$2"; shift;;
+	  --containers) dockerContainers="$2"; shift;;
 
           *)
               echo >&2 \
@@ -25,6 +31,7 @@ function parseCommandLineArguments() {
                   --username          dockerhub username (will prompt for username if argument is not passed)
                   --password          dockerhub password (will prompt for password if argument is not passed)
                   --composefile       the location of the docker compose file (defaults to $dockerComposeFile)
+		  --containers        the docker containers to be affected
               "
               exit 1;;
           *)  break;; # terminate while loop
@@ -33,9 +40,9 @@ function parseCommandLineArguments() {
   done
 }
 
-####################################################################################
-# Logs in to Docker
-####################################################################################
+#
+# logs in to Docker
+#
 function dockerLogin() {
   if [[ "$dockerUsername" = "" ]]; then
     read -p "Docker username: " dockerUsername
@@ -45,27 +52,37 @@ function dockerLogin() {
   	read  -s -p "Docker password: " dockerPassword
   fi
 
-  sudo docker login -u $dockerUsername -p $dockerPassword
- 
+  sudo docker login -u "$dockerUsername" -p "$dockerPassword"
+
   if [ $? -ne 0 ]; then
     echo "login failed, exiting."
     exit 1
   fi
-
-  
 }
 
+#
+# parse arguments
+#
 parseCommandLineArguments $@
+
+#
+# update the docker containers
+#
 dockerLogin
 
-echo "stopping docker containers..."
-sudo docker-compose -f $dockerComposeFile stop
-echo "removing old docker containers..."
-sudo docker-compose -f $dockerComposeFile rm --force
-echo "updating docker containers..."
-sudo docker-compose -f $dockerComposeFile pull
-echo "starting new docker containers..."
-sudo docker-compose -f $dockerComposeFile up -d
+echo "stopping docker containers $dockerContainers..."
+sudo docker-compose -f "$dockerComposeFile" stop "$dockerContainers"
+
+echo "removing old docker containers $dockerContainers..."
+sudo docker-compose -f "$dockerComposeFile" rm --force "$dockerContainers"
+
+echo "updating docker containers $dockerContainers..."
+sudo docker-compose -f "$dockerComposeFile" pull "$dockerContainers"
+
+echo "starting new docker containers $dockerContainers..."
+sudo docker-compose -f "$dockerComposeFile" up -d "$dockerContainers"
+
 echo "removing old docker images"
 sudo docker system prune --all --force
+
 sudo docker logout
