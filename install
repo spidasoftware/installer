@@ -294,7 +294,7 @@ function createDockerComposeFile() {
   HOST_MACHINE_HOST_NAME=`hostname -f`
   if [[ $spidaMin = true ]]; then
     echo "spidamin:
-  image: spidasoftware/min:$tag
+  image: bentleysystemsinc/spida-min:$tag
   restart: always
   volumes:
     - $filesDir:/var/lib/spida/files
@@ -328,7 +328,7 @@ function createDockerComposeFile() {
       POSTGRES_HOSTNAME="postgresql.${serverRoot}"
     fi
     echo "postgresql:
-  image: spidasoftware/postgresql:$postgresqlTag
+  image: bentleysystemsinc/spida-postgresql:$postgresqlTag
   restart: always
   hostname: $POSTGRES_HOSTNAME
   volumes:
@@ -345,7 +345,7 @@ function createDockerComposeFile() {
       MONGODB_HOSTNAME="mongodb.${serverRoot}"
     fi
     echo "mongodb:
-  image: spidasoftware/mongodb:$mongodbTag
+  image: bentleysystemsinc/spida-mongodb:$mongodbTag
   restart: always
   hostname: $MONGODB_HOSTNAME
   volumes:
@@ -363,19 +363,25 @@ function createDockerComposeFile() {
 
   if [[ $spidaMin = true ]]; then
     echo "redis:
-  image: spidasoftware/redis:$redisTag
+  image: bentleysystems/spida-redis:$redisTag
   restart: always" >> $dockerComposeFile
 
     echo "proxy:
-  image: spidasoftware/spida-proxy:latest
+  image: bentleysystemsinc/spida-proxy:latest
   restart: always
   volumes:
     - /apps/spidamin/logs/proxy:/logs
   links:
     - spidamin" >> $dockerComposeFile
 
+    echo "results-viewer:
+  image: bentleysystemsinc/spida-results-viewer:latest
+  restart: always
+  links:
+    - spidamin" >> $dockerComposeFile
+
     echo "apache:
-  image: spidasoftware/apache:$apacheTag
+  image: bentleysystemsinc/spida-apache:$apacheTag
   restart: always
   links:
     - proxy
@@ -419,19 +425,19 @@ function updateDockerComposeFile() {
 
   # Update the docker image tags, if they were passed in, they aren't latest.
   if [ $MIN_TAG_PASSED = true ]; then
-    sed -i "s/spidasoftware\/min:\S*$/spidasoftware\/min:$tag/g" $dockerComposeFile
+    sed -i "s/bentleysystemsinc\/spida-min:\S*$/bentleysystemsinc\/spida-min:$tag/g" $dockerComposeFile
   fi
   if [ $POSTGRESQL_TAG_PASSED = true ]; then
-    sed -i "s/spidasoftware\/postgresql:\S*$/spidasoftware\/postgresql:${postgresqlTag}/" $dockerComposeFile
+    sed -i "s/bentleysystemsinc\/spida-postgresql:\S*$/bentleysystemsinc\/spida-postgresql:${postgresqlTag}/" $dockerComposeFile
   fi
   if [ $MONGODB_TAG_PASSED = true ]; then
-    sed -i "s/spidasoftware\/mongodb:\S*$/spidasoftware\/mongodb:${mongodbTag}/" $dockerComposeFile
+    sed -i "s/bentleysystemsinc\/spida-mongodb:\S*$/bentleysystemsinc\/spida-mongodb:${mongodbTag}/" $dockerComposeFile
   fi
   if [ $REDIS_TAG_PASSED = true ]; then
-    sed -i "s/spidasoftware\/redis:\S*$/spidasoftware\/redis:${redisTag}/" $dockerComposeFile
+    sed -i "s/bentleysystemsinc\/spida-redis:\S*$/bentleysystemsinc\/spida-redis:${redisTag}/" $dockerComposeFile
   fi
   if [ $APACHE_TAG_PASSED = true ]; then
-    sed -i "s/spidasoftware\/apache:\S*$/spidasoftware\/apache:${apacheTag}/" $dockerComposeFile
+    sed -i "s/bentleysystemsinc\/spida-apache:\S*$/bentleysystemsinc\/spida-apache:${apacheTag}/" $dockerComposeFile
   fi
 
   POSTGRES_HOSTNAME="postgresql.${HOST_MACHINE_HOST_NAME}"
