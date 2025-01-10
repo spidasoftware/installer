@@ -447,10 +447,10 @@ function updateDockerComposeFile() {
     sed -i "s\(bentleysystemsinc\|spidasoftware\)\/\(spida-\)\?apache:\S*$/bentleysystemsinc\/spida-apache:${apacheTag}/" $dockerComposeFile
   fi
   if [ $PROXY_TAG_PASSED = true ]; then
-	  sed -i "s/\(bentleysystemsinc\|spidasoftware\)\/\(spida-\)\?proxy:\S*$/bentleysystemsinc\/spida-proxy:${proxyTag}/" $dockerComposeFile
+    sed -i "s/\(bentleysystemsinc\|spidasoftware\)\/\(spida-\)\?proxy:\S*$/bentleysystemsinc\/spida-proxy:${proxyTag}/" $dockerComposeFile
   fi
   if [ $RV_TAG_PASSED = true ]; then
-	  sed -i "s/\(bentleysystemsinc\|spidasoftware\)\/\(spida-\)\?results-viewer:\S*$/bentleysystemsinc\/spida-results-viewer:${rvTag}/" $dockerComposeFile
+    sed -i "s/\(bentleysystemsinc\|spidasoftware\)\/\(spida-\)\?results-viewer:\S*$/bentleysystemsinc\/spida-results-viewer:${rvTag}/" $dockerComposeFile
   fi
 
   POSTGRES_HOSTNAME="postgresql.${HOST_MACHINE_HOST_NAME}"
