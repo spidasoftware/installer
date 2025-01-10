@@ -28,11 +28,14 @@ postgresqlTag="latest"
 mongodbTag="latest"
 redisTag="latest"
 apacheTag="latest"
+proxyTag="latest"
+rvTag="latest"
 MIN_TAG_PASSED=false
 POSTGRESQL_TAG_PASSED=false
 MONGODB_TAG_PASSED=false
 REDIS_TAG_PASSED=false
 APACHE_TAG_PASSED=false
+PROXY_TAG_PASSED=false
 defaultApacheApp=""
 sendgridApiKey=""
 alertEmail=""
@@ -55,6 +58,8 @@ function parseCommandLineArguments() {
           --mongodbtag)  mongodbTag="$2"; MONGODB_TAG_PASSED=true; shift;;
           --redistag)  redisTag="$2"; REDIS_TAG_PASSED=true; shift;;
           --apachetag)  apacheTag="$2"; APACHE_TAG_PASSED=true; shift;;
+	  --proxytag)	proxyTag="$2"; PROXY_TAG_PASSED=true; shift;;
+	  --rvtag)	rvTag="$2"; RV_TAG_PASSED=true; shift;;
           --serverroot)  serverRoot="$2"; shift;;
           --username)  dockerUsername="$2"; shift;;
           --password)  dockerPassword="$2"; shift;;
@@ -87,6 +92,8 @@ function parseCommandLineArguments() {
                   --mongodbtag          docker mongodb tag to deploy (defaults to latest)
                   --redistag            docker mongodb tag to deploy (defaults to latest)
                   --apachetag           docker apache tag to deploy (defaults to latest)
+		  --proxytag		docker proxy tag to deploy (defaults to latest)
+		  --rvtag		docker results viewer tag to deploy (defaults to latest)
                   --username            dockerhub username (will prompt for username if argument is not passed)
                   --password            dockerhub password (will prompt for password if argument is not passed)
                   --serverroot          server root that you will navigate to view the application (ex: min.com)
@@ -367,7 +374,7 @@ function createDockerComposeFile() {
   restart: always" >> $dockerComposeFile
 
     echo "proxy:
-  image: bentleysystemsinc/spida-proxy:latest
+  image: bentleysystemsinc/spida-proxy:$proxyTag
   restart: always
   volumes:
     - /apps/spidamin/logs/proxy:/logs
@@ -375,7 +382,7 @@ function createDockerComposeFile() {
     - spidamin" >> $dockerComposeFile
 
     echo "results-viewer:
-  image: bentleysystemsinc/spida-results-viewer:latest
+  image: bentleysystemsinc/spida-results-viewer:$rvTag
   restart: always
   links:
     - spidamin" >> $dockerComposeFile
@@ -425,19 +432,25 @@ function updateDockerComposeFile() {
 
   # Update the docker image tags, if they were passed in, they aren't latest.
   if [ $MIN_TAG_PASSED = true ]; then
-    sed -i "s/bentleysystemsinc\/spida-min:\S*$/bentleysystemsinc\/spida-min:$tag/g" $dockerComposeFile
+    sed -i "s/\(bentleysystemsinc\|spidasoftware\)\/\(spida-\)\?min:\S*$/bentleysystemsinc\/spida-min:$tag/g" $dockerComposeFile
   fi
   if [ $POSTGRESQL_TAG_PASSED = true ]; then
-    sed -i "s/bentleysystemsinc\/spida-postgresql:\S*$/bentleysystemsinc\/spida-postgresql:${postgresqlTag}/" $dockerComposeFile
+    sed -i "s/\(bentleysystemsinc\|spidasoftware\)\/\(spida-\)\?postgresql:\S*$/bentleysystemsinc\/spida-postgresql:${postgresqlTag}/" $dockerComposeFile
   fi
   if [ $MONGODB_TAG_PASSED = true ]; then
-    sed -i "s/bentleysystemsinc\/spida-mongodb:\S*$/bentleysystemsinc\/spida-mongodb:${mongodbTag}/" $dockerComposeFile
+    sed -i "s/\(bentleysystemsinc\|spidasoftware\)\/\(spida-\)\?mongodb:\S*$/bentleysystemsinc\/spida-mongodb:${mongodbTag}/" $dockerComposeFile
   fi
   if [ $REDIS_TAG_PASSED = true ]; then
-    sed -i "s/bentleysystemsinc\/spida-redis:\S*$/bentleysystemsinc\/spida-redis:${redisTag}/" $dockerComposeFile
+    sed -i "s/\(bentleysystemsinc\|spidasoftware\)\/\(spida-\)\?redis:\S*$/bentleysystemsinc\/spida-redis:${redisTag}/" $dockerComposeFile
   fi
   if [ $APACHE_TAG_PASSED = true ]; then
-    sed -i "s/bentleysystemsinc\/spida-apache:\S*$/bentleysystemsinc\/spida-apache:${apacheTag}/" $dockerComposeFile
+    sed -i "s\(bentleysystemsinc\|spidasoftware\)\/\(spida-\)\?apache:\S*$/bentleysystemsinc\/spida-apache:${apacheTag}/" $dockerComposeFile
+  fi
+  if [ $PROXY_TAG_PASSED = true ]; then
+	  sed -i "s/\(bentleysystemsinc\|spidasoftware\)\/\(spida-\)\?proxy:\S*$/bentleysystemsinc\/spida-proxy:${proxyTag}/" $dockerComposeFile
+  fi
+  if [ $RV_TAG_PASSED = true ]; then
+	  sed -i "s/\(bentleysystemsinc\|spidasoftware\)\/\(spida-\)\?results-viewer:\S*$/bentleysystemsinc\/spida-results-viewer:${rvTag}/" $dockerComposeFile
   fi
 
   POSTGRES_HOSTNAME="postgresql.${HOST_MACHINE_HOST_NAME}"
