@@ -58,8 +58,8 @@ function parseCommandLineArguments() {
           --mongodbtag)  mongodbTag="$2"; MONGODB_TAG_PASSED=true; shift;;
           --redistag)  redisTag="$2"; REDIS_TAG_PASSED=true; shift;;
           --apachetag)  apacheTag="$2"; APACHE_TAG_PASSED=true; shift;;
-	  --proxytag)	proxyTag="$2"; PROXY_TAG_PASSED=true; shift;;
-	  --rvtag)	rvTag="$2"; RV_TAG_PASSED=true; shift;;
+          --proxytag)	proxyTag="$2"; PROXY_TAG_PASSED=true; shift;;
+          --rvtag)	rvTag="$2"; RV_TAG_PASSED=true; shift;;
           --serverroot)  serverRoot="$2"; shift;;
           --username)  dockerUsername="$2"; shift;;
           --password)  dockerPassword="$2"; shift;;
