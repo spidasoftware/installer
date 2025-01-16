@@ -36,6 +36,7 @@ MONGODB_TAG_PASSED=false
 REDIS_TAG_PASSED=false
 APACHE_TAG_PASSED=false
 PROXY_TAG_PASSED=false
+RV_TAG_PASSED=false
 defaultApacheApp=""
 sendgridApiKey=""
 alertEmail=""
