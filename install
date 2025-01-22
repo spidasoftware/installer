@@ -371,7 +371,7 @@ function createDockerComposeFile() {
 
   if [[ $spidaMin = true ]]; then
     echo "redis:
-  image: bentleysystems/spida-redis:$redisTag
+  image: bentleysystemsinc/spida-redis:$redisTag
   restart: always" >> $dockerComposeFile
 
     echo "proxy:
