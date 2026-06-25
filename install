@@ -55,37 +55,37 @@ function parseCommandLineArguments() {
   while [ $# -gt 0 ]
   do
       case "$1" in
-          --tag) tag="$2"; MIN_TAG_PASSED=true; shift;;
-          --postgresqltag)  postgresqlTag="$2"; POSTGRESQL_TAG_PASSED=true; shift;;
-          --mongodbtag)  mongodbTag="$2"; MONGODB_TAG_PASSED=true; shift;;
-          --redistag)  redisTag="$2"; REDIS_TAG_PASSED=true; shift;;
-          --apachetag)  apacheTag="$2"; APACHE_TAG_PASSED=true; shift;;
-          --proxytag)	proxyTag="$2"; PROXY_TAG_PASSED=true; shift;;
-          --rvtag)	rvTag="$2"; RV_TAG_PASSED=true; shift;;
-          --serverroot)  serverRoot="$2"; shift;;
-          --username)  dockerUsername="$2"; shift;;
-          --password)  dockerPassword="$2"; shift;;
-          --backupdir)  backupDir="$2"; shift;;
-          --configdir)  configDir="$2"; shift;;
-          --dbpassword)  databasePassword="$2"; shift;;
-          --mongopassword)  mongoPassword="$2"; shift;;
-          --interchangecookiesecret) interchangeCookieSecret="$2";shift;;
-          --interchangecookiename) interchangeCookieName="$2";shift;;
-          --mongodopts)  mongodOpts="$2"; shift;;
-          --tomcatpassword)  tomcatAdminPassword="$2"; shift;;
-          --userpassword)  defaultUserPassword="$2"; shift;;
-          --samlpassword)  samlPassword="$2"; shift;;
-          --apitoken)  defaulUserApiToken="$2"; shift;;
-          --no-spidamin)  spidaMin=false;;
-          --no-postgresql)  postgresql=false;;
-          --no-mongodb)  mongo=false;;
-          --no-start) dockerStart=false;;
-          --has-docker) hasDockerConfig=true;;
-          --disable-countdown) disableCountdown=true;;
-          --default-apache-app)  defaultApacheApp="$2"; shift;;
-          --sendgrid-api-key) sendgridApiKey="$2"; shift;;
-          --alert-email) alertEmail="$2"; shift;;
-          --postgres-shm-size) postgresShmSize="$2"; shift;;
+          --tag) tag="$2";      MIN_TAG_PASSED=true; shift;;
+          --postgresqltag)      postgresqlTag="$2"; POSTGRESQL_TAG_PASSED=true; shift;;
+          --mongodbtag)         mongodbTag="$2"; MONGODB_TAG_PASSED=true; shift;;
+          --redistag)           redisTag="$2"; REDIS_TAG_PASSED=true; shift;;
+          --apachetag)          apacheTag="$2"; APACHE_TAG_PASSED=true; shift;;
+          --proxytag)           proxyTag="$2"; PROXY_TAG_PASSED=true; shift;;
+          --rvtag)              rvTag="$2"; RV_TAG_PASSED=true; shift;;
+          --serverroot)         serverRoot="$2"; shift;;
+          --username)           dockerUsername="$2"; shift;;
+          --password)           dockerPassword="$2"; shift;;
+          --backupdir)          backupDir="$2"; shift;;
+          --configdir)          configDir="$2"; shift;;
+          --dbpassword)         databasePassword="$2"; shift;;
+          --mongopassword)      mongoPassword="$2"; shift;;
+          --interchangecookiesecret)  interchangeCookieSecret="$2";shift;;
+          --interchangecookiename)    interchangeCookieName="$2";shift;;
+          --mongodopts)         mongodOpts="$2"; shift;;
+          --tomcatpassword)     tomcatAdminPassword="$2"; shift;;
+          --userpassword)       defaultUserPassword="$2"; shift;;
+          --samlpassword)       samlPassword="$2"; shift;;
+          --apitoken)           defaultUserApiToken="$2"; shift;;
+          --no-spidamin)        spidaMin=false;;
+          --no-postgresql)      postgresql=false;;
+          --no-mongodb)         mongo=false;;
+          --no-start)           dockerStart=false;;
+          --has-docker)         hasDockerConfig=true;;
+          --disable-countdown)  disableCountdown=true;;
+          --default-apache-app) defaultApacheApp="$2"; shift;;
+          --sendgrid-api-key)   sendgridApiKey="$2"; shift;;
+          --alert-email)        alertEmail="$2"; shift;;
+          --postgres-shm-size)  postgresShmSize="$2"; shift;;
           *)
               echo >&2 \
               "usage: $0 [option value]
@@ -95,8 +95,8 @@ function parseCommandLineArguments() {
                   --mongodbtag          docker mongodb tag to deploy (defaults to latest)
                   --redistag            docker redis tag to deploy (defaults to latest)
                   --apachetag           docker apache tag to deploy (defaults to latest)
-                  --proxytag		        docker proxy tag to deploy (defaults to latest)
-                  --rvtag		            docker results viewer tag to deploy (defaults to latest)
+                  --proxytag            docker proxy tag to deploy (defaults to latest)
+                  --rvtag               docker results viewer tag to deploy (defaults to latest)
                   --username            dockerhub username (will prompt for username if argument is not passed)
                   --password            dockerhub password (will prompt for password if argument is not passed)
                   --serverroot          server root that you will navigate to view the application (ex: min.com)
