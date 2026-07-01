@@ -44,7 +44,7 @@ interchangeCookieName=""
 interchangeCookieSecret=""
 postgresBackupCron="30 10 * * *"
 mongoBackupCron="30 10 * * *"
-postgresShmSize="1G"
+postgresShmSize=""
 
 ####################################################################################
 #
@@ -117,7 +117,7 @@ function parseCommandLineArguments() {
                   --default-apache-app  default apache app to redirect to (defaults to projectmanager)
                   --sendgrid-api-key)   sendgrid apikey that will be used to send emails when there is an error in a cron backup job
                   --alert-email)        email address to send alerts to when a backup job fails
-                  --postgres-shm-size)  shared memory size for PostgreSQL (defaults to ${postgresShmSize})
+                  --postgres-shm-size)  shared memory size for PostgreSQL (ex: 256M, 1G, 2G, 4G, etc)
               "
               exit 1;;
           *)  break;; # terminate while loop
@@ -352,7 +352,7 @@ function createDockerComposeFile() {
         echo "  env_file: $dockerEnvFile" >> $dockerComposeFile
       fi
       if [[ "$postgresShmSize" != "" ]]; then
-        echo "  shm_size: \${POSTGRES_SHM_SIZE:-$postgresShmSize}" >> $dockerComposeFile
+        echo "  shm_size: \${POSTGRES_SHM_SIZE}" >> $dockerComposeFile
         echo "POSTGRES_SHM_SIZE=$postgresShmSize" >> $envFile
       fi
   fi
