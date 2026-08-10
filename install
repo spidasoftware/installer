@@ -246,6 +246,7 @@ function createDockerComposeFile() {
   dockerComposeFile=$configDir/docker-compose.yml
   dockerEnvFile=$configDir/.docker-common.env
   envFile=$configDir/.env
+  proxyEnvFile=$configDir/.proxy.env
   mkdir -p $configDir
   sudo rm -f $dockerComposeFile
   sudo touch $dockerComposeFile
@@ -389,8 +390,22 @@ function createDockerComposeFile() {
   restart: always
   volumes:
     - /apps/spidamin/logs/proxy:/logs
+  env_file: $proxyEnvFile
   links:
     - spidamin" >> $dockerComposeFile
+
+    # Ensure the proxy license env file exists so docker-compose can start; leave an existing one untouched
+    if [ ! -f $proxyEnvFile ]; then
+      echo "Creating the .proxy.env template file"
+      sudo touch $proxyEnvFile
+      echo "LICENSE_ENVIRONMENT=
+LICENSE_DEVICE_ID=
+LICENSE_ACCESS_KEY=
+LICENSE_PATH=/app/bin/resources
+LICENSE_CHECK_INTERVAL=14400
+LICENSE_OFFLINE_MODE=false
+PRODUCT_ID=3337" >> $proxyEnvFile
+    fi
 
     echo "results-viewer:
   image: bentleysystemsinc/spida-results-viewer:$rvTag
